@@ -227,7 +227,7 @@ const StyledWrapper = styled.div`
     top: 0;
     width: 100px;
     text-decoration: underline;
-    color: var(--font-color);
+    color: white;
     font-weight: 600;
   }
 
@@ -238,7 +238,7 @@ const StyledWrapper = styled.div`
     top: 0;
     width: 100px;
     text-decoration: none;
-    color: var(--font-color);
+    color: white;
     font-weight: 600;
   }
 
@@ -251,8 +251,8 @@ const StyledWrapper = styled.div`
   .slider {
     box-sizing: border-box;
     border-radius: 5px;
-    border: 2px solid var(--main-color);
-    box-shadow: 4px 4px var(--main-color);
+    border: 2px solid gray;
+    box-shadow: 4px 4px gray;
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -296,6 +296,7 @@ const StyledWrapper = styled.div`
 
   /* card */ 
   .flip-card__inner {
+    cursor: pointer;
     width: 300px;
     height: 350px;
     position: relative;
@@ -356,7 +357,8 @@ const StyledWrapper = styled.div`
   }
 
   .flip-card__input::placeholder {
-    color: var(--font-color-sub);
+    color: black;
+    font-weight: bold;
     opacity: 0.8;
   }
 
