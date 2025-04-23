@@ -5,172 +5,172 @@ import axios from 'axios';
 import { BACKEND_URL } from '@/app/config';
 
 const AuthInput = () => {
-    const router = useRouter();
-    const [isLogin, setIsLogin] = useState(true);
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: ''
-    });
-    const [loading, setLoading] = useState(false);
-    const [notification, setNotification] = useState<{
-        message: string;
-        type: 'success' | 'error';
-    } | null>(null);
+  const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
-    const handleToggle = () => {
-        setIsLogin(!isLogin);
+  const handleToggle = () => {
+    setIsLogin(!isLogin);
+    setNotification(null);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
         setNotification(null);
-    };
+      }, 5000); // Auto-close after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setNotification(null);
 
-    useEffect(() => {
-        if (notification) {
-            const timer = setTimeout(() => {
-                setNotification(null);
-            }, 5000); // Auto-close after 5 seconds
-            return () => clearTimeout(timer);
-        }
-    }, [notification]);
+    try {
+      const url = isLogin
+        ? `${BACKEND_URL}/api/v1/auth/user/signin`
+        : `${BACKEND_URL}/api/v1/auth/user/signup`;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setNotification(null);
+      const { data } = await axios.post(url, formData);
 
-        try {
-            const url = isLogin
-                ? `${BACKEND_URL}/api/v1/auth/user/signin`
-                : `${BACKEND_URL}/api/v1/auth/user/signup`;
+      setNotification({
+        message: isLogin
+          ? 'Login successful! Redirecting...'
+          : 'Signup successful! Please login',
+        type: 'success'
+      });
 
-            const { data } = await axios.post(url, formData);
+      if (isLogin) {
+        // Redirect after 2 seconds to show the notification
+        setTimeout(() => router.push('/dashboard'), 2000);
+      } else {
+        // Switch to login after 2 seconds
+        setTimeout(() => setIsLogin(true), 2000);
+      }
+    } catch (err: any) {
+      setNotification({
+        message: err.response?.data?.message || 'Something went wrong',
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            setNotification({
-                message: isLogin
-                    ? 'Login successful! Redirecting...'
-                    : 'Signup successful! Please login',
-                type: 'success'
-            });
+  return (
+    <>
+      <NotificationSidebar show={!!notification} type={notification?.type}>
+        {notification?.message}
+      </NotificationSidebar>
 
-            if (isLogin) {
-                // Redirect after 2 seconds to show the notification
-                setTimeout(() => router.push('/dashboard'), 2000);
-            } else {
-                // Switch to login after 2 seconds
-                setTimeout(() => setIsLogin(true), 2000);
-            }
-        } catch (err: any) {
-            setNotification({
-                message: err.response?.data?.message || 'Something went wrong',
-                type: 'error'
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <>
-            <NotificationSidebar show={!!notification} type={notification?.type}>
-                {notification?.message}
-            </NotificationSidebar>
-
-            <StyledWrapper>
-                <div className="wrapper">
-                    <div className="card-switch">
-                        <label className="switch">
-                            <input
-                                type="checkbox"
-                                className="toggle"
-                                checked={!isLogin}
-                                onChange={handleToggle}
-                            />
-                            <span className="slider" />
-                            <span className="card-side" />
-                            <div className="flip-card__inner" style={{ transform: isLogin ? 'rotateY(0deg)' : 'rotateY(180deg)' }}>
-                                <div className="flip-card__front">
-                                    <div className="title">Log in</div>
-                                    <form className="flip-card__form" onSubmit={handleSubmit}>
-                                        <input
-                                            className="flip-card__input"
-                                            name="email"
-                                            placeholder="Email"
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                        <input
-                                            className="flip-card__input"
-                                            name="password"
-                                            placeholder="Password"
-                                            type="password"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                        <button
-                                            className="flip-card__btn"
-                                            type="submit"
-                                            disabled={loading}
-                                        >
-                                            {loading ? 'Logging in...' : "Let's go!"}
-                                        </button>
-                                    </form>
-                                </div>
-                                <div className="flip-card__back">
-                                    <div className="title">Sign up</div>
-                                    <form className="flip-card__form" onSubmit={handleSubmit}>
-                                        <input
-                                            className="flip-card__input"
-                                            name="username"
-                                            placeholder="Username"
-                                            type="text"
-                                            value={formData.username}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                        <input
-                                            className="flip-card__input"
-                                            name="email"
-                                            placeholder="Email"
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                        <input
-                                            className="flip-card__input"
-                                            name="password"
-                                            placeholder="Password"
-                                            type="password"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                        <button
-                                            className="flip-card__btn"
-                                            type="submit"
-                                            disabled={loading}
-                                        >
-                                            {loading ? 'Signing up...' : 'Confirm!'}
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
+      <StyledWrapper>
+        <div className="wrapper">
+          <div className="card-switch">
+            <label className="switch">
+              <input
+                type="checkbox"
+                className="toggle"
+                checked={!isLogin}
+                onChange={handleToggle}
+              />
+              <span className="slider" />
+              <span className="card-side" />
+              <div className="flip-card__inner" style={{ transform: isLogin ? 'rotateY(0deg)' : 'rotateY(180deg)' }}>
+                <div className="flip-card__front">
+                  <div className="title">Log in</div>
+                  <form className="flip-card__form" onSubmit={handleSubmit}>
+                    <input
+                      className="flip-card__input"
+                      name="email"
+                      placeholder="Email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                    <input
+                      className="flip-card__input"
+                      name="password"
+                      placeholder="Password"
+                      type="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                    />
+                    <button
+                      className="flip-card__btn"
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? 'Logging in...' : "Let's go!"}
+                    </button>
+                  </form>
                 </div>
-            </StyledWrapper>
-        </>
-    );
+                <div className="flip-card__back">
+                  <div className="title">Sign up</div>
+                  <form className="flip-card__form" onSubmit={handleSubmit}>
+                    <input
+                      className="flip-card__input"
+                      name="username"
+                      placeholder="Username"
+                      type="text"
+                      value={formData.username}
+                      onChange={handleChange}
+                      required
+                    />
+                    <input
+                      className="flip-card__input"
+                      name="email"
+                      placeholder="Email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                    <input
+                      className="flip-card__input"
+                      name="password"
+                      placeholder="Password"
+                      type="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                    />
+                    <button
+                      className="flip-card__btn"
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? 'Signing up...' : 'Confirm!'}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </StyledWrapper>
+    </>
+  );
 };
 
 // Notification Sidebar Styles
@@ -227,7 +227,7 @@ const StyledWrapper = styled.div`
     top: 0;
     width: 100px;
     text-decoration: underline;
-    color: white;
+    color: black;
     font-weight: 600;
   }
 
@@ -238,7 +238,7 @@ const StyledWrapper = styled.div`
     top: 0;
     width: 100px;
     text-decoration: none;
-    color: white;
+    color: black;
     font-weight: 600;
   }
 
@@ -252,7 +252,7 @@ const StyledWrapper = styled.div`
     box-sizing: border-box;
     border-radius: 5px;
     border: 2px solid gray;
-    box-shadow: 4px 4px gray;
+    box-shadow: 4px 4px green;
     position: absolute;
     cursor: pointer;
     top: 0;
