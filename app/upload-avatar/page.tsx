@@ -141,7 +141,7 @@ export default function UploadAvatar() {
 
             <div className="relative z-10 text-white container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mt-10">
-                    <Button text="Back" variant="general_1" startIcon={<Back />} onClick={() => router.push("/dashboard")} />
+                    <Button text="Back" variant="general_2" startIcon={<Back />} onClick={() => router.push("/dashboard")} />
                 </div>
 
                 {/* Image Upload Section */}
@@ -205,7 +205,7 @@ export default function UploadAvatar() {
                         {/* Upload Button */}
                         <Button
                             text={loading ? "Uploading..." : "Upload Image"}
-                            variant="general_1"
+                            variant="blue_variant"
                             onClick={uploadImage}
                             startIcon={<ArrowUp />}
                         >

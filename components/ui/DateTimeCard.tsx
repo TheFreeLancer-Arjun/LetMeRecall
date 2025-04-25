@@ -44,7 +44,7 @@ const DateTimeCard = () => {
 
 const StyledWrapper = styled.div`
   .card {
-    width: 280px;
+    width: 250px;
     height: 120px; /* Changed from 150px to make it shorter */
     background: rgb(17, 4, 134);
     border-radius: 15px;

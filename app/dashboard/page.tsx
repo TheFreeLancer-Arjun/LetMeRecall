@@ -15,6 +15,8 @@ import { Notification } from "@/components/ui/Notification";
 import Loader from "@/components/ui/Loader";
 import Image from "next/image";
 import { User } from "@/icons/User";
+import CodeEditorLoader from "@/components/ui/CodeEditor-Loader";
+import { EnterDoor } from "@/icons/EnterDoor";
 
 export default function Dashboard() {
     const [avatar, setAvatar] = useState<string | null>(null);
@@ -77,6 +79,15 @@ export default function Dashboard() {
         checkSessionAndFetchData();
     }, [router]);
 
+    const handleLogout = async () => {
+        try {
+            await axios.post(`${BACKEND_URL}/api/v1/auth/user/logout`, {}, { withCredentials: true });
+            router.push("/");
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
+
     // Fetch Avatar:
     useEffect(() => {
         const fetchAvatar = async () => {
@@ -87,17 +98,24 @@ export default function Dashboard() {
                 if (response.data && response.data.url) {
                     setAvatar(response.data.url);
                 }
-                // if (response.data && response.data.url) {
-                //     console.log("SDASDD")
-                //     setAvatar(response.data.url);
-                // }
             } catch (err) {
                 console.error("Failed to fetch avatar:", err);
             }
         };
 
         fetchAvatar();
-    } , [])
+    }, []);
+
+    // Close avatar menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (avatarMenuRef.current && !avatarMenuRef.current.contains(event.target as Node)) {
+                setAvatarMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     if (!isAuthenticated && !isLoading) {
         return (
@@ -117,7 +135,7 @@ export default function Dashboard() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <Loader />
+                <CodeEditorLoader />
             </div>
         );
     }
@@ -140,66 +158,75 @@ export default function Dashboard() {
                     onClose={() => setModalOpen(false)}
                 />
 
-                <div className="bg-purple-300 flex justify-around items-center p-4 rounded-2xl mb-5 gap">
+                <div className="bg-purple-300 flex justify-between items-center p-4 rounded-2xl mb-5">
                     <div>
                         <span className="text-black font-extrabold text-2xl">
                             Welcome, {username || 'User'}!
                         </span>
                     </div>
 
-                    <div className="relative" ref={avatarMenuRef}>
-                        <button
-                            onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-                            className="flex cursor-pointer items-center justify-center w-20 h-20 rounded-full overflow-hidden border-2 border-black hover:border-gray-400 transition-colors"
-                        >
-                            {avatar ? (
-                                <Image
-                                    src={avatar}
-                                    alt="User Avatar"
-                                    width={40}
-                                    height={40}
-                                    className="object-cover w-full h-full"
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-emerald-500 flex items-center justify-center">
-                                    <User />
-                                </div>
-                            )}
-                        </button>
-
-                        {/* Avatar Dropdown Menu */}
-                        <AnimatePresence>
-                            {avatarMenuOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="absolute right-0 mt-2 w-48 bg-slate-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50"
-                                >
-                                    <div className="py-1">
-                                        <button
-                                            onClick={() => {
-                                                router.push("/upload-avatar");
-                                                setAvatarMenuOpen(false);
-                                            }}
-                                            className="block cursor-pointer w-full text-left px-4 py-2 text-white hover:bg-gray-700"
-                                        >
-                                            Change Profile Image
-                                        </button>
+                    <div className="flex items-center space-x-4">
+                        <div className="relative" ref={avatarMenuRef}>
+                            <button
+                                onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+                                className="flex cursor-pointer items-center justify-center w-16 h-16 rounded-full overflow-hidden border-2 border-black hover:border-gray-400 transition-colors"
+                            >
+                                {avatar ? (
+                                    <Image
+                                        src={avatar}
+                                        alt="User Avatar"
+                                        width={64}
+                                        height={64}
+                                        className="object-cover w-full h-full"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-emerald-500 flex items-center justify-center">
+                                        <User />
                                     </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                                )}
+                            </button>
+
+                            {/* Avatar Dropdown Menu - Positioned absolutely relative to the avatar button */}
+                            <AnimatePresence>
+                                {avatarMenuOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute right-0 top-full mt-2 w-48 bg-slate-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50"
+                                    >
+                                        <div className="py-1">
+                                            <button
+                                                onClick={() => {
+                                                    router.push("/upload-avatar");
+                                                    setAvatarMenuOpen(false);
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700 transition-colors"
+                                            >
+                                                Change Profile Image
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        <Button 
+                            variant="red_variant" 
+                            text="Logout" 
+                            endIcon={<EnterDoor />} 
+                            onClick={handleLogout} 
+                        />
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-4">
+                <div className="flex justify-end gap-4 mb-4">
                     <Button
                         variant="general_1"
                         text="Share Brain"
                         endIcon={<Share />}
-                        onClick={() => { }}
+                        onClick={() => {}}
                     />
                     <Button
                         variant="general_2"
