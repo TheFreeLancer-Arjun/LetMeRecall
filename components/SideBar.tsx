@@ -2,18 +2,12 @@ import { Brain } from "@/icons/Brain"
 import { SiderbarItem } from "./SidebarItem"
 import { Twitter } from "@/icons/Twitter"
 import { Youtube } from "@/icons/Youtube"
-import { Button } from "./ui/Button"
-import { EnterDoor } from "@/icons/EnterDoor"
-import { BACKEND_URL } from "@/app/config"
-import { useState } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
 import DateTimeCard from "./ui/DateTimeCard"
 
 export const SideBar = () => {
 
     const router = useRouter();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
     return (

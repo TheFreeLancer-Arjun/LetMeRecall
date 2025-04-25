@@ -3,7 +3,6 @@
 import { AddContent } from "@/components/modals/AddContent";
 import { SideBar } from "@/components/SideBar";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/ContentCard";
 import { Plus } from "@/icons/Plus";
 import { Share } from "@/icons/Share";
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +20,7 @@ import { EnterDoor } from "@/icons/EnterDoor";
 export default function Dashboard() {
     const [avatar, setAvatar] = useState<string | null>(null);
     const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    // const [error, setError] = useState<string | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [notification, setNotification] = useState<{
         message: string;
@@ -236,17 +235,8 @@ export default function Dashboard() {
                     />
                 </div>
 
-                <div className="flex gap-5">
-                    <Card
-                        title="This is Tate!!"
-                        link="https://x.com/__Shubhashish__/status/1914984127821992129"
-                        type="twitter"
-                    />
-                    <Card
-                        title="Gonna Read these!!"
-                        link="https://x.com/librarymindset/status/1872519924440342728"
-                        type="twitter"
-                    />
+                <div className="flex justify-center font-extrabold text-3xl md:text-5xl gap-5">
+                    Coming Soon
                 </div>
             </div>
         </>

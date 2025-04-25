@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import AuthInput from "@/components/ui/AuthInput";
 import { Button } from "@/components/ui/Button";
@@ -11,6 +11,10 @@ import { FileStack } from "@/icons/FileStack";
 import { QuestionMark } from "@/icons/QuestionMark";
 import { Save } from "@/icons/Save";
 import { Search } from "@/icons/Search";
+import Image from "next/image";
+import { ThanksForVisit } from "@/components/ui/ThanksForVisit";
+import axios from "axios";
+import { BACKEND_URL } from "@/app/config";
 
 export default function Home() {
     const ref = useRef(null);
@@ -18,6 +22,26 @@ export default function Home() {
         target: ref,
         offset: ["start start", "end start"],
     });
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    // Check session on component mount
+    useEffect(() => {
+        const checkSession = async () => {
+            try {
+                const response = await axios.get(`${BACKEND_URL}/api/v1/auth/user/session`, {
+                    withCredentials: true
+                });
+                setIsLoggedIn(response.data.message.isAuthenticated);
+            } catch (error) {
+                console.error("Session check failed:", error);
+                setIsLoggedIn(false);
+            } finally {
+                setLoading(false);
+            }
+        };
+        checkSession();
+    }, []);
 
     // Background animation values
     const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
@@ -27,22 +51,33 @@ export default function Home() {
     const yText = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
     const scaleText = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                {/* You can add a loader here if needed */}
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100" ref={ref}>
-            {/* Animated Background Elements */}
+            {/* Navbar - Placed outside the animated background container */}
+            <div className="relative z-50">
+                <Navbar />
+            </div>
+
+            {/* Animated Background Elements - Lower z-index */}
             <motion.div
                 style={{ y: yBg, opacity: opacityBg }}
-                className="absolute inset-0 z-0 overflow-hidden"
+                className="absolute inset-0 z-10 overflow-hidden"
             >
-                <div className="absolute top-20 left-10 w-32 h-32 bg-red-400 rounded-full filter blur-3xl opacity-20"></div>
-                <div className="absolute top-1/3 right-20 w-64 h-64 bg-purple-400 rounded-full filter blur-3xl opacity-20"></div>
-                <div className="absolute bottom-20 left-1/3 w-48 h-48 bg-indigo-400 rounded-full filter blur-3xl opacity-20"></div>
+                <div className="absolute top-20 left-10 w-40 h-40 bg-red-400 rounded-full filter blur-[100px] opacity-100"></div>
+                <div className="absolute top-1/3 right-20 w-64 h-64 bg-purple-400 rounded-full filter blur-[100px] opacity-100"></div>
+                <div className="absolute bottom-20 left-1/3 w-48 h-48 bg-indigo-400 rounded-full filter blur-[100px] opacity-100"></div>
             </motion.div>
 
-            <Navbar />
-
             {/* Hero Section */}
-            <section className="relative z-10 min-h-[80vh] flex flex-col lg:flex-row items-center justify-center px-4 sm:px-6 lg:px-8 gap-12">
+            <section className="relative z-20 min-h-[80vh] flex flex-col lg:flex-row items-center justify-center px-4 sm:px-6 lg:px-8 gap-12 pt-16">
                 <motion.div
                     style={{ y: yText, scale: scaleText }}
                     className="max-w-2xl text-center lg:text-left"
@@ -71,12 +106,21 @@ export default function Home() {
                         transition={{ delay: 0.4, duration: 0.8 }}
                         className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
                     >
-                        <Button
-                            variant="blue_variant"
-                            endIcon={<EnterDoor />}
-                            text="Get Started"
-                            onClick={() => window.location.href = "/signup"}
-                        />
+                        {isLoggedIn ? (
+                            <Button
+                                variant="purple_variant"
+                                endIcon={<EnterDoor />}
+                                text="Dashboard"
+                                onClick={() => window.location.href = "/dashboard"}
+                            />
+                        ) : (
+                            <Button
+                                variant="blue_variant"
+                                endIcon={<EnterDoor />}
+                                text="Get Started"
+                                onClick={() => window.location.href = "/"}
+                            />
+                        )}
                         <Button
                             variant="general_2"
                             endIcon={<QuestionMark />}
@@ -98,7 +142,7 @@ export default function Home() {
             </section>
 
             {/* Features Section */}
-            <section className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+            <section className="relative z-20 py-20 px-4 sm:px-6 lg:px-8">
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -143,7 +187,7 @@ export default function Home() {
                         transition={{ duration: 0.3, delay: 0.2 }}
                     >
                         <LandingCard1
-                            icon={<FileStack  />}
+                            icon={<FileStack />}
                             TopTitle="Smarter Organization"
                             description="Auto-tagging and smart folders keep your digital memories organized without effort."
                         />
@@ -151,7 +195,38 @@ export default function Home() {
                 </motion.div>
             </section>
 
-            {/* Additional sections can be added here */}
+            {/* Founder Section */}
+            <section className="relative z-20 flex flex-col md:flex-row justify-center mt-12 md:mt-16 items-center gap-6 md:gap-10 lg:gap-20 px-4">
+                <div className="hidden md:block">
+                    <ThanksForVisit />
+                </div>
+
+                <div onClick={() => { window.open("https://imshubh.site") }} className="order-first md:order-none">
+                    <Image
+                        src="/shubhImg.png"
+                        alt="SWS logo"
+                        width={100}
+                        height={100}
+                        className="cursor-pointer w-24 sm:w-32 md:w-64 lg:w-80"
+                        priority
+                    />
+                </div>
+
+                <div className="hidden md:block">
+                    <ThanksForVisit />
+                </div>
+            </section>
+
+            <section className="relative z-20 flex items-center justify-center flex-col mt-6 md:mt-8">
+                <span className="tracking-tighter text-sm sm:text-base md:text-xl text-center font-medium text-primary/80">
+                    Made By
+                </span>
+                <h1 className="cursor-pointer tracking-tighter text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center font-bold my-1 sm:my-2">
+                    <span className="font-bold bg-gradient-to-b from-red-400 to-red-500 bg-clip-text text-transparent">
+                        Shubhashish Chakraborty
+                    </span>
+                </h1>
+            </section>
         </div>
     );
 }

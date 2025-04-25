@@ -1,4 +1,3 @@
-import { Github } from '@/icons/Github';
 import React, { ReactElement } from 'react';
 import styled from 'styled-components';
 

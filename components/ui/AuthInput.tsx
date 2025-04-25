@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { BACKEND_URL } from '@/app/config';
 
 const AuthInput = () => {
@@ -50,7 +50,9 @@ const AuthInput = () => {
                 ? `${BACKEND_URL}/api/v1/auth/user/signin`
                 : `${BACKEND_URL}/api/v1/auth/user/signup`;
 
-            const { data } = await axios.post(url, formData, {withCredentials: true});
+            const { data } = await axios.post(url, formData, { withCredentials: true });
+
+            console.log(data);
 
             setNotification({
                 message: isLogin
@@ -66,10 +68,11 @@ const AuthInput = () => {
                 // Switch to login after 2 seconds
                 setTimeout(() => setIsLogin(true), 2000);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message: string }>;
             setNotification({
-                message: err.response?.data?.message || 'Something went wrong',
-                type: 'error'
+                message: error.response?.data?.message || 'Something went wrong',
+                type: 'error',
             });
         } finally {
             setLoading(false);
