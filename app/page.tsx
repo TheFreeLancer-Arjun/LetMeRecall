@@ -15,6 +15,7 @@ import Image from "next/image";
 import { ThanksForVisit } from "@/components/ui/ThanksForVisit";
 import axios from "axios";
 import { BACKEND_URL } from "@/app/config";
+import Footer from "@/components/Footer";
 
 export default function Home() {
     const ref = useRef(null);
@@ -226,6 +227,10 @@ export default function Home() {
                         Shubhashish Chakraborty
                     </span>
                 </h1>
+            </section>
+
+            <section>
+                <Footer/>
             </section>
         </div>
     );
