@@ -6,14 +6,19 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/ContentCard";
 import { Plus } from "@/icons/Plus";
 import { Share } from "@/icons/Share";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { BACKEND_URL } from "@/app/config";
 import { Notification } from "@/components/ui/Notification";
 import Loader from "@/components/ui/Loader";
+import Image from "next/image";
+import { User } from "@/icons/User";
 
 export default function Dashboard() {
+    const [avatar, setAvatar] = useState<string | null>(null);
+    const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [notification, setNotification] = useState<{
@@ -24,6 +29,7 @@ export default function Dashboard() {
     const [username, setUsername] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const avatarMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const checkSessionAndFetchData = async () => {
@@ -71,6 +77,28 @@ export default function Dashboard() {
         checkSessionAndFetchData();
     }, [router]);
 
+    // Fetch Avatar:
+    useEffect(() => {
+        const fetchAvatar = async () => {
+            try {
+                const response = await axios.get(`${BACKEND_URL}/api/v1/avatar/get-avatar`, {
+                    withCredentials: true,
+                });
+                if (response.data && response.data.url) {
+                    setAvatar(response.data.url);
+                }
+                // if (response.data && response.data.url) {
+                //     console.log("SDASDD")
+                //     setAvatar(response.data.url);
+                // }
+            } catch (err) {
+                console.error("Failed to fetch avatar:", err);
+            }
+        };
+
+        fetchAvatar();
+    } , [])
+
     if (!isAuthenticated && !isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -112,10 +140,58 @@ export default function Dashboard() {
                     onClose={() => setModalOpen(false)}
                 />
 
-                <div className="bg-purple-300 flex justify-center p-4 rounded-2xl mb-5">
-                    <span className="text-black font-extrabold text-2xl">
-                        Welcome, {username || 'User'}!
-                    </span>
+                <div className="bg-purple-300 flex justify-around items-center p-4 rounded-2xl mb-5 gap">
+                    <div>
+                        <span className="text-black font-extrabold text-2xl">
+                            Welcome, {username || 'User'}!
+                        </span>
+                    </div>
+
+                    <div className="relative" ref={avatarMenuRef}>
+                        <button
+                            onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+                            className="flex cursor-pointer items-center justify-center w-20 h-20 rounded-full overflow-hidden border-2 border-black hover:border-gray-400 transition-colors"
+                        >
+                            {avatar ? (
+                                <Image
+                                    src={avatar}
+                                    alt="User Avatar"
+                                    width={40}
+                                    height={40}
+                                    className="object-cover w-full h-full"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-emerald-500 flex items-center justify-center">
+                                    <User />
+                                </div>
+                            )}
+                        </button>
+
+                        {/* Avatar Dropdown Menu */}
+                        <AnimatePresence>
+                            {avatarMenuOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="absolute right-0 mt-2 w-48 bg-slate-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50"
+                                >
+                                    <div className="py-1">
+                                        <button
+                                            onClick={() => {
+                                                router.push("/upload-avatar");
+                                                setAvatarMenuOpen(false);
+                                            }}
+                                            className="block cursor-pointer w-full text-left px-4 py-2 text-white hover:bg-gray-700"
+                                        >
+                                            Change Profile Image
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
 
                 <div className="flex justify-end gap-4">

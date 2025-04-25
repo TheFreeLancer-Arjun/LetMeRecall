@@ -8,6 +8,7 @@ import { BACKEND_URL } from "@/app/config"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import axios from "axios"
+import DateTimeCard from "./ui/DateTimeCard"
 
 export const SideBar = () => {
 
@@ -35,9 +36,14 @@ export const SideBar = () => {
                 <SiderbarItem itemText="Tweets" itemIcon={<Twitter/>}/>
                 <SiderbarItem itemText="Videos" itemIcon={<Youtube/>}/>
             </div>
-            <div className="mt-130 flex justify-center">
-                <Button variant="red_variant" text="Logout" endIcon={<EnterDoor/>} onClick={handleLogout}/>
+
+            <div className="mt-30">
+                <DateTimeCard/>
             </div>
+
+            <div className="mt-70 flex justify-center">
+                <Button variant="red_variant" text="Logout" endIcon={<EnterDoor/>} onClick={handleLogout}/>
+            </div>            
         </div>
     )
 }
