@@ -1,3 +1,4 @@
+// app/dashboard/page.tsx
 "use client";
 
 import { AddContent } from "@/components/modals/AddContent";
@@ -16,11 +17,21 @@ import Image from "next/image";
 import { User } from "@/icons/User";
 import CodeEditorLoader from "@/components/ui/CodeEditor-Loader";
 import { EnterDoor } from "@/icons/EnterDoor";
+import { ContentCard } from "@/components/ui/ContentCard";
+import { ContentType } from "@/utils/ContentType";
+
+interface Content {
+    id: string;
+    title: string;
+    url?: string | null;
+    description?: string | null;
+    type: ContentType;
+    createdAt: string;
+}
 
 export default function Dashboard() {
     const [avatar, setAvatar] = useState<string | null>(null);
     const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
-    // const [error, setError] = useState<string | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [notification, setNotification] = useState<{
         message: string;
@@ -30,6 +41,8 @@ export default function Dashboard() {
     const [username, setUsername] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [contents, setContents] = useState<Content[]>([]);
+    const [isFetchingContents, setIsFetchingContents] = useState(false);
     const avatarMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -63,6 +76,9 @@ export default function Dashboard() {
 
                 setUsername(userResponse.data.finalUserData.username);
 
+                // Fetch user contents
+                await fetchContents();
+
             } catch (error) {
                 console.error("Error:", error);
                 setNotification({
@@ -77,6 +93,47 @@ export default function Dashboard() {
 
         checkSessionAndFetchData();
     }, [router]);
+
+    const fetchContents = async () => {
+        try {
+            setIsFetchingContents(true);
+            const response = await axios.get(`${BACKEND_URL}/api/v1/content/my-content`, {
+                withCredentials: true
+            });
+            setContents(response.data.contents || []);
+        } catch (error) {
+            console.error("Failed to fetch contents:", error);
+            setNotification({
+                message: "Failed to load contents",
+                type: "error"
+            });
+        } finally {
+            setIsFetchingContents(false);
+        }
+    };
+
+    const handleDeleteContent = async (contentId: string) => {
+        try {
+            await axios.delete(`${BACKEND_URL}/api/v1/content/${contentId}`, {
+                withCredentials: true
+            });
+            setContents(contents.filter(content => content.id !== contentId));
+            setNotification({
+                message: "Content deleted successfully",
+                type: "success"
+            });
+        } catch (error) {
+            console.error("Failed to delete content:", error);
+            setNotification({
+                message: "Failed to delete content",
+                type: "error"
+            });
+        }
+    };
+
+    const handleContentCreated = () => {
+        fetchContents();
+    };
 
     const handleLogout = async () => {
         try {
@@ -155,6 +212,7 @@ export default function Dashboard() {
                 <AddContent
                     open={modalOpen}
                     onClose={() => setModalOpen(false)}
+                    onContentCreated={handleContentCreated}
                 />
 
                 <div className="bg-purple-300 flex justify-between items-center p-4 rounded-2xl mb-5">
@@ -185,7 +243,6 @@ export default function Dashboard() {
                                 )}
                             </button>
 
-                            {/* Avatar Dropdown Menu - Positioned absolutely relative to the avatar button */}
                             <AnimatePresence>
                                 {avatarMenuOpen && (
                                     <motion.div
@@ -211,11 +268,11 @@ export default function Dashboard() {
                             </AnimatePresence>
                         </div>
 
-                        <Button 
-                            variant="red_variant" 
-                            text="Logout" 
-                            endIcon={<EnterDoor />} 
-                            onClick={handleLogout} 
+                        <Button
+                            variant="red_variant"
+                            text="Logout"
+                            endIcon={<EnterDoor />}
+                            onClick={handleLogout}
                         />
                     </div>
                 </div>
@@ -225,7 +282,7 @@ export default function Dashboard() {
                         variant="general_1"
                         text="Share Brain"
                         endIcon={<Share />}
-                        onClick={() => {}}
+                        onClick={() => { }}
                     />
                     <Button
                         variant="general_2"
@@ -235,9 +292,31 @@ export default function Dashboard() {
                     />
                 </div>
 
-                <div className="flex justify-center font-extrabold text-3xl md:text-5xl gap-5">
-                    Coming Soon
-                </div>
+                {isFetchingContents ? (
+                    <div className="flex justify-center items-center h-64">
+                        <Loader />
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {contents.length === 0 ? (
+                            <div className="col-span-full text-center py-10">
+                                <p className="text-xl font-semibold">No contents yet. Add some content to get started!</p>
+                            </div>
+                        ) : (
+                            contents.map(content => (
+                                <ContentCard
+                                    key={content.id}
+                                    id={content.id}
+                                    title={content.title}
+                                    url={content.url}
+                                    description={content.description}
+                                    type={content.type}
+                                    onDelete={handleDeleteContent}
+                                />
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
         </>
     );
