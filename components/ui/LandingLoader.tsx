@@ -4,15 +4,53 @@ import styled from 'styled-components';
 const LandingLoader = () => {
   return (
     <StyledWrapper>
-      <div className="hourglassBackground">
-        <div className="hourglassContainer">
-          <div className="hourglassCurves" />
-          <div className="hourglassCapTop" />
-          <div className="hourglassGlassTop" />
-          <div className="hourglassSand" />
-          <div className="hourglassSandStream" />
-          <div className="hourglassCapBottom" />
-          <div className="hourglassGlass" />
+      <div>
+        <div className="box-of-star1">
+          <div className="star star-position1" />
+          <div className="star star-position2" />
+          <div className="star star-position3" />
+          <div className="star star-position4" />
+          <div className="star star-position5" />
+          <div className="star star-position6" />
+          <div className="star star-position7" />
+        </div>
+        <div className="box-of-star2">
+          <div className="star star-position1" />
+          <div className="star star-position2" />
+          <div className="star star-position3" />
+          <div className="star star-position4" />
+          <div className="star star-position5" />
+          <div className="star star-position6" />
+          <div className="star star-position7" />
+        </div>
+        <div className="box-of-star3">
+          <div className="star star-position1" />
+          <div className="star star-position2" />
+          <div className="star star-position3" />
+          <div className="star star-position4" />
+          <div className="star star-position5" />
+          <div className="star star-position6" />
+          <div className="star star-position7" />
+        </div>
+        <div className="box-of-star4">
+          <div className="star star-position1" />
+          <div className="star star-position2" />
+          <div className="star star-position3" />
+          <div className="star star-position4" />
+          <div className="star star-position5" />
+          <div className="star star-position6" />
+          <div className="star star-position7" />
+        </div>
+        <div data-js="astro" className="astronaut">
+          <div className="head" />
+          <div className="arm arm-left" />
+          <div className="arm arm-right" />
+          <div className="body">
+            <div className="panel" />
+          </div>
+          <div className="leg leg-left" />
+          <div className="leg leg-right" />
+          <div className="schoolbag" />
         </div>
       </div>
     </StyledWrapper>
@@ -20,476 +58,332 @@ const LandingLoader = () => {
 }
 
 const StyledWrapper = styled.div`
-  .hourglassBackground {
-    position: relative;
-    background-color: rgb(71, 60, 60);
-    height: 130px;
-    width: 130px;
-    border-radius: 50%;
-    margin: 30px auto;
+  @keyframes snow {
+    0% {
+      opacity: 0;
+      transform: translateY(0px);
+    }
+
+    20% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(650px);
+    }
   }
 
-  .hourglassContainer {
+  @keyframes astronaut {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .box-of-star1,
+  .box-of-star2,
+  .box-of-star3,
+  .box-of-star4 {
+    // width: 100%;
     position: absolute;
-    top: 30px;
-    left: 40px;
-    width: 50px;
-    height: 70px;
-    -webkit-animation: hourglassRotate 2s ease-in 0s infinite;
-    animation: hourglassRotate 2s ease-in 0s infinite;
-    transform-style: preserve-3d;
-    perspective: 1000px;
-  }
-
-  .hourglassContainer div,
-  .hourglassContainer div:before,
-  .hourglassContainer div:after {
-    transform-style: preserve-3d;
-  }
-
-  @-webkit-keyframes hourglassRotate {
-    0% {
-      transform: rotateX(0deg);
-    }
-
-    50% {
-      transform: rotateX(180deg);
-    }
-
-    100% {
-      transform: rotateX(180deg);
-    }
-  }
-
-  @keyframes hourglassRotate {
-    0% {
-      transform: rotateX(0deg);
-    }
-
-    50% {
-      transform: rotateX(180deg);
-    }
-
-    100% {
-      transform: rotateX(180deg);
-    }
-  }
-
-  .hourglassCapTop {
+    z-index: 10;
+    left: 0;
     top: 0;
+    transform: translateY(0px);
+    // height: 700px;
   }
 
-  .hourglassCapTop:before {
-    top: -25px;
+  .box-of-star1 {
+    animation: snow 5s linear infinite;
   }
 
-  .hourglassCapTop:after {
-    top: -20px;
+  .box-of-star2 {
+    animation: snow 5s -1.64s linear infinite;
   }
 
-  .hourglassCapBottom {
-    bottom: 0;
+  .box-of-star3 {
+    animation: snow 5s -2.30s linear infinite;
   }
 
-  .hourglassCapBottom:before {
-    bottom: -25px;
+  .box-of-star4 {
+    animation: snow 5s -3.30s linear infinite;
   }
 
-  .hourglassCapBottom:after {
-    bottom: -20px;
-  }
-
-  .hourglassGlassTop {
-    transform: rotateX(90deg);
-    position: absolute;
-    top: -16px;
-    left: 3px;
+  .star {
+    // width: 3px;
+    // height: 3px;
     border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    background-color: #999999;
-  }
-
-  .hourglassGlass {
-    perspective: 100px;
+    background-color: #FFF;
     position: absolute;
-    top: 32px;
-    left: 20px;
-    width: 10px;
-    height: 6px;
-    background-color: #999999;
-    opacity: 0.5;
+    z-index: 10;
+    opacity: 0.7;
   }
 
-  .hourglassGlass:before,
-  .hourglassGlass:after {
-    content: '';
-    display: block;
-    position: absolute;
-    background-color: #999999;
-    left: -17px;
-    width: 44px;
-    height: 28px;
-  }
-
-  .hourglassGlass:before {
-    top: -27px;
-    border-radius: 0 0 25px 25px;
-  }
-
-  .hourglassGlass:after {
-    bottom: -27px;
-    border-radius: 25px 25px 0 0;
-  }
-
-  .hourglassCurves:before,
-  .hourglassCurves:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 32px;
-    width: 6px;
-    height: 6px;
+  .star:before {
+    content: "";
+    // width: 6px;
+    // height: 6px;
     border-radius: 50%;
-    background-color: #333;
-    animation: hideCurves 2s ease-in 0s infinite;
-  }
-
-  .hourglassCurves:before {
-    left: 15px;
-  }
-
-  .hourglassCurves:after {
-    left: 29px;
-  }
-
-  @-webkit-keyframes hideCurves {
-    0% {
-      opacity: 1;
-    }
-
-    25% {
-      opacity: 0;
-    }
-
-    30% {
-      opacity: 0;
-    }
-
-    40% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes hideCurves {
-    0% {
-      opacity: 1;
-    }
-
-    25% {
-      opacity: 0;
-    }
-
-    30% {
-      opacity: 0;
-    }
-
-    40% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 1;
-    }
-  }
-
-  .hourglassSandStream:before {
-    content: '';
-    display: block;
+    background-color: #FFF;
     position: absolute;
-    left: 24px;
-    width: 3px;
-    background-color: white;
-    -webkit-animation: sandStream1 2s ease-in 0s infinite;
-    animation: sandStream1 2s ease-in 0s infinite;
+    z-index: 10;
+    top: 80px;
+    left: 70px;
+    opacity: .7;
   }
 
-  .hourglassSandStream:after {
-    content: '';
-    display: block;
+  .star:after {
+    content: "";
+    // width: 8px;
+    // height: 8px;
+    border-radius: 50%;
+    background-color: #FFF;
     position: absolute;
-    top: 36px;
-    left: 19px;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid #fff;
-    animation: sandStream2 2s ease-in 0s infinite;
-  }
-
-  @-webkit-keyframes sandStream1 {
-    0% {
-      height: 0;
-      top: 35px;
-    }
-
-    50% {
-      height: 0;
-      top: 45px;
-    }
-
-    60% {
-      height: 35px;
-      top: 8px;
-    }
-
-    85% {
-      height: 35px;
-      top: 8px;
-    }
-
-    100% {
-      height: 0;
-      top: 8px;
-    }
-  }
-
-  @keyframes sandStream1 {
-    0% {
-      height: 0;
-      top: 35px;
-    }
-
-    50% {
-      height: 0;
-      top: 45px;
-    }
-
-    60% {
-      height: 35px;
-      top: 8px;
-    }
-
-    85% {
-      height: 35px;
-      top: 8px;
-    }
-
-    100% {
-      height: 0;
-      top: 8px;
-    }
-  }
-
-  @-webkit-keyframes sandStream2 {
-    0% {
-      opacity: 0;
-    }
-
-    50% {
-      opacity: 0;
-    }
-
-    51% {
-      opacity: 1;
-    }
-
-    90% {
-      opacity: 1;
-    }
-
-    91% {
-      opacity: 0;
-    }
-
-    100% {
-      opacity: 0;
-    }
-  }
-
-  @keyframes sandStream2 {
-    0% {
-      opacity: 0;
-    }
-
-    50% {
-      opacity: 0;
-    }
-
-    51% {
-      opacity: 1;
-    }
-
-    90% {
-      opacity: 1;
-    }
-
-    91% {
-      opacity: 0;
-    }
-
-    100% {
-      opacity: 0;
-    }
-  }
-
-  .hourglassSand:before,
-  .hourglassSand:after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 6px;
-    background-color: white;
-    perspective: 500px;
-  }
-
-  .hourglassSand:before {
+    z-index: 10;
     top: 8px;
-    width: 39px;
-    border-radius: 3px 3px 30px 30px;
-    animation: sandFillup 2s ease-in 0s infinite;
+    left: 170px;
+    opacity: .9;
   }
 
-  .hourglassSand:after {
-    border-radius: 30px 30px 3px 3px;
-    animation: sandDeplete 2s ease-in 0s infinite;
+  .star-position1 {
+    top: 30px;
+    left: 20px;
   }
 
-  @-webkit-keyframes sandFillup {
-    0% {
-      opacity: 0;
-      height: 0;
-    }
-
-    60% {
-      opacity: 1;
-      height: 0;
-    }
-
-    100% {
-      opacity: 1;
-      height: 17px;
-    }
+  .star-position2 {
+    top: 110px;
+    left: 250px;
   }
 
-  @keyframes sandFillup {
-    0% {
-      opacity: 0;
-      height: 0;
-    }
-
-    60% {
-      opacity: 1;
-      height: 0;
-    }
-
-    100% {
-      opacity: 1;
-      height: 17px;
-    }
+  .star-position3 {
+    top: 60px;
+    left: 570px;
   }
 
-  @-webkit-keyframes sandDeplete {
-    0% {
-      opacity: 0;
-      top: 45px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
-
-    1% {
-      opacity: 1;
-      top: 45px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
-
-    24% {
-      opacity: 1;
-      top: 45px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
-
-    25% {
-      opacity: 1;
-      top: 41px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
-
-    50% {
-      opacity: 1;
-      top: 41px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
-
-    90% {
-      opacity: 1;
-      top: 41px;
-      height: 0;
-      width: 10px;
-      left: 20px;
-    }
+  .star-position4 {
+    top: 120px;
+    left: 900px;
   }
 
-  @keyframes sandDeplete {
-    0% {
-      opacity: 0;
-      top: 45px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
+  .star-position5 {
+    top: 20px;
+    left: 1120px;
+  }
 
-    1% {
-      opacity: 1;
-      top: 45px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
+  .star-position6 {
+    top: 90px;
+    left: 1280px;
+  }
 
-    24% {
-      opacity: 1;
-      top: 45px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
+  .star-position7 {
+    top: 30px;
+    left: 1480px;
+  }
 
-    25% {
-      opacity: 1;
-      top: 41px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
+  .astronaut {
+    width: 250px;
+    height: 300px;
+    position: absolute;
+    z-index: 11;
+    top: calc(50% - 150px);
+    left: calc(50% - 125px);
+    animation: astronaut 5s linear infinite;
+  }
 
-    50% {
-      opacity: 1;
-      top: 41px;
-      height: 17px;
-      width: 38px;
-      left: 6px;
-    }
+  .schoolbag {
+    width: 100px;
+    height: 150px;
+    position: absolute;
+    z-index: 1;
+    top: calc(50% - 75px);
+    left: calc(50% - 50px);
+    background-color: #94b7ca;
+    border-radius: 50px 50px 0 0 / 30px 30px 0 0;
+  }
 
-    90% {
-      opacity: 1;
-      top: 41px;
-      height: 0;
-      width: 10px;
-      left: 20px;
-    }
+  .head {
+    width: 97px;
+    height: 80px;
+    position: absolute;
+    z-index: 3;
+    background: -webkit-linear-gradient(left, #e3e8eb 0%, #e3e8eb 50%, #fbfdfa 50%, #fbfdfa 100%);
+    border-radius: 50%;
+    top: 34px;
+    left: calc(50% - 47.5px);
+  }
+
+  .head:after {
+    content: "";
+    width: 60px;
+    height: 50px;
+    position: absolute;
+    top: calc(50% - 25px);
+    left: calc(50% - 30px);
+    background: -webkit-linear-gradient(top, #15aece 0%, #15aece 50%, #0391bf 50%, #0391bf 100%);
+    border-radius: 15px;
+  }
+
+  .head:before {
+    content: "";
+    width: 12px;
+    height: 25px;
+    position: absolute;
+    top: calc(50% - 12.5px);
+    left: -4px;
+    background-color: #618095;
+    border-radius: 5px;
+    box-shadow: 92px 0px 0px #618095;
+  }
+
+  .body {
+    width: 85px;
+    height: 100px;
+    position: absolute;
+    z-index: 2;
+    background-color: #fffbff;
+    border-radius: 40px / 20px;
+    top: 105px;
+    left: calc(50% - 41px);
+    background: -webkit-linear-gradient(left, #e3e8eb 0%, #e3e8eb 50%, #fbfdfa 50%, #fbfdfa 100%);
+  }
+
+  .panel {
+    width: 60px;
+    height: 40px;
+    position: absolute;
+    top: 20px;
+    left: calc(50% - 30px);
+    background-color: #b7cceb;
+  }
+
+  .panel:before {
+    content: "";
+    width: 30px;
+    height: 5px;
+    position: absolute;
+    top: 9px;
+    left: 7px;
+    background-color: #fbfdfa;
+    box-shadow: 0px 9px 0px #fbfdfa, 0px 18px 0px #fbfdfa;
+  }
+
+  .panel:after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    top: 9px;
+    right: 7px;
+    background-color: #fbfdfa;
+    border-radius: 50%;
+    box-shadow: 0px 14px 0px 2px #fbfdfa;
+  }
+
+  .arm {
+    width: 80px;
+    height: 30px;
+    position: absolute;
+    top: 121px;
+    z-index: 2;
+  }
+
+  .arm-left {
+    left: 30px;
+    background-color: #e3e8eb;
+    border-radius: 0 0 0 39px;
+  }
+
+  .arm-right {
+    right: 30px;
+    background-color: #fbfdfa;
+    border-radius: 0 0 39px 0;
+  }
+
+  .arm-left:before,
+  .arm-right:before {
+    content: "";
+    width: 30px;
+    height: 70px;
+    position: absolute;
+    top: -40px;
+  }
+
+  .arm-left:before {
+    border-radius: 50px 50px 0px 120px / 50px 50px 0 110px;
+    left: 0;
+    background-color: #e3e8eb;
+  }
+
+  .arm-right:before {
+    border-radius: 50px 50px 120px 0 / 50px 50px 110px 0;
+    right: 0;
+    background-color: #fbfdfa;
+  }
+
+  .arm-left:after,
+  .arm-right:after {
+    content: "";
+    width: 30px;
+    height: 10px;
+    position: absolute;
+    top: -24px;
+  }
+
+  .arm-left:after {
+    background-color: #6e91a4;
+    left: 0;
+  }
+
+  .arm-right:after {
+    right: 0;
+    background-color: #b6d2e0;
+  }
+
+  .leg {
+    width: 30px;
+    height: 40px;
+    position: absolute;
+    z-index: 2;
+    bottom: 70px;
+  }
+
+  .leg-left {
+    left: 76px;
+    background-color: #e3e8eb;
+    transform: rotate(20deg);
+  }
+
+  .leg-right {
+    right: 73px;
+    background-color: #fbfdfa;
+    transform: rotate(-20deg);
+  }
+
+  .leg-left:before,
+  .leg-right:before {
+    content: "";
+    width: 50px;
+    height: 25px;
+    position: absolute;
+    bottom: -26px;
+  }
+
+  .leg-left:before {
+    left: -20px;
+    background-color: #e3e8eb;
+    border-radius: 30px 0 0 0;
+    border-bottom: 10px solid #6d96ac;
+  }
+
+  .leg-right:before {
+    right: -20px;
+    background-color: #fbfdfa;
+    border-radius: 0 30px 0 0;
+    border-bottom: 10px solid #b0cfe4;
   }`;
 
 export default LandingLoader;

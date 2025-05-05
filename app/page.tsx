@@ -26,6 +26,11 @@ export default function Home() {
     });
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [showLoader, setShowLoader] = useState(true);
+
+    useEffect(() => {
+        console.log(loading)
+    } , []) 
 
     // Check session on component mount
     useEffect(() => {
@@ -42,7 +47,15 @@ export default function Home() {
                 setLoading(false);
             }
         };
+
+        // Start the 4 second timer
+        const timer = setTimeout(() => {
+            setShowLoader(false);
+        }, 3000);
+
         checkSession();
+
+        return () => clearTimeout(timer);
     }, []);
 
     // Background animation values
@@ -53,10 +66,10 @@ export default function Home() {
     const yText = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
     const scaleText = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
 
-    if (loading) {
+    if (showLoader) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <LandingLoader/>
+            <div className="h-screen bg-slate-500 flex items-center justify-center">
+                <LandingLoader />
             </div>
         );
     }
@@ -231,7 +244,7 @@ export default function Home() {
             </section>
 
             <section>
-                <Footer/>
+                <Footer />
             </section>
         </div>
     );
