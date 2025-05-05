@@ -16,6 +16,7 @@ import { ThanksForVisit } from "@/components/ui/ThanksForVisit";
 import axios from "axios";
 import { BACKEND_URL } from "@/app/config";
 import Footer from "@/components/Footer";
+import LandingLoader from "@/components/ui/LandingLoader";
 
 export default function Home() {
     const ref = useRef(null);
@@ -55,7 +56,7 @@ export default function Home() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                {/* You can add a loader here if needed */}
+                <LandingLoader/>
             </div>
         );
     }
