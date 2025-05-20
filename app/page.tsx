@@ -17,6 +17,7 @@ import axios from "axios";
 import { BACKEND_URL } from "@/app/config";
 import Footer from "@/components/Footer";
 import { LandingLoader } from "@/components/ui/LandingLoader";
+import OauthProvider from "@/components/ui/OauthProviderBtn";
 
 export default function Home() {
     const ref = useRef(null);
@@ -30,7 +31,7 @@ export default function Home() {
 
     useEffect(() => {
         console.log(loading)
-    } , []) 
+    }, [])
 
     // Check session on component mount
     useEffect(() => {
@@ -51,7 +52,7 @@ export default function Home() {
         // Start the 4 second timer
         const timer = setTimeout(() => {
             setShowLoader(false);
-        }, 3000);
+        }, 1000);
 
         checkSession();
 
@@ -141,7 +142,11 @@ export default function Home() {
                             endIcon={<QuestionMark />}
                             text="See how it works"
                         />
+
                     </motion.div>
+                    <div className="mr-80 mt-5">
+                        <OauthProvider />
+                    </div>
                 </motion.div>
 
                 <motion.div
