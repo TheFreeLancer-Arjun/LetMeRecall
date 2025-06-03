@@ -51,6 +51,31 @@ export default function Dashboard() {
     const [contents, setContents] = useState<Content[]>([]);
     const [isFetchingContents, setIsFetchingContents] = useState(false);
     const avatarMenuRef = useRef<HTMLDivElement>(null);
+    const [authLoading, setAuthLoading] = useState(true);
+
+    useEffect(() => {
+        console.log(authLoading);
+    } , []);
+
+    // Checking authentication status
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const response = await axios.get(`${BACKEND_URL}/api/v1/auth/user/session`, {
+                    withCredentials: true
+                });
+                setIsAuthenticated(response.status === 200);
+            } catch (error) {
+                console.error("Authentication check failed:", error);
+                setIsAuthenticated(false);
+                router.push("/");
+            } finally {
+                setAuthLoading(false);
+            }
+        };
+
+        checkAuth();
+    }, [router]);
 
     useEffect(() => {
         const checkSessionAndFetchData = async () => {

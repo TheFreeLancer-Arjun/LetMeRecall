@@ -8,6 +8,10 @@ const OauthProvider = () => {
         window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
     };
 
+    const handleGithubLogin = () => {
+        window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/github`;
+    };
+
     return (
         <StyledWrapper>
             <div className="shubh-style gap-y-3">
@@ -18,7 +22,7 @@ const OauthProvider = () => {
                     Continue with Google
                 </button>
 
-                <button onClick={() => { alert("COMING SOON") }} className="oauthButton">
+                <button onClick={handleGithubLogin} className="oauthButton">
                     <div className='mr-2'>
                         <Github />
                     </div>
