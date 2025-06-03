@@ -31,7 +31,7 @@ export default function Home() {
 
     useEffect(() => {
         console.log(loading)
-    }, [])
+    }, [loading]);
 
     // Check session on component mount
     useEffect(() => {

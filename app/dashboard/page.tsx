@@ -29,6 +29,13 @@ interface Content {
     createdAt: string;
 }
 
+// Helper function to get cookies
+function getCookie(name: string) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+}
+
 export default function Dashboard() {
     const [avatar, setAvatar] = useState<string | null>(null);
     const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
@@ -47,52 +54,111 @@ export default function Dashboard() {
 
     useEffect(() => {
         const checkSessionAndFetchData = async () => {
-            try {
-                setIsLoading(true);
+            // Get token from URL
+            const params = new URLSearchParams(window.location.search);
+            const urlToken = params.get('token');
 
-                // First check session
-                const sessionResponse = await axios.get(
-                    `${BACKEND_URL}/api/v1/auth/user/session`,
-                    { withCredentials: true }
-                );
+            if (urlToken) {
+                // Store the token in cookies
+                document.cookie = `token=${urlToken}; path=/; max-age=${4 * 24 * 60 * 60}; secure=${process.env.NODE_ENV === 'production'}; sameSite=lax`;
 
-                if (!sessionResponse.data.message.isAuthenticated) {
-                    setNotification({
-                        message: "Please login first",
-                        type: "error"
-                    });
-                    setIsAuthenticated(false);
-                    setTimeout(() => router.push("/"), 2000);
-                    return;
-                }
-
-                setIsAuthenticated(true);
-
-                // If authenticated, fetch user data
-                const userResponse = await axios.get(
-                    `${BACKEND_URL}/api/v1/auth/user/me`,
-                    { withCredentials: true }
-                );
-
-                setUsername(userResponse.data.finalUserData.username);
-
-                // Fetch user contents
-                await fetchContents();
-
-            } catch (error) {
-                console.error("Error:", error);
-                setNotification({
-                    message: "Session expired. Please login again",
-                    type: "error"
-                });
-                setTimeout(() => router.push("/"), 2000);
-            } finally {
-                setIsLoading(false);
+                // Clean the URL
+                params.delete('token');
+                const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+                router.replace(newUrl);
             }
-        };
 
+            // Then verify session
+            const sessionResponse = await axios.get(
+                `${BACKEND_URL}/api/v1/auth/user/session`,
+                {
+                    withCredentials: true,
+                    headers: {
+                        // Include token from cookies explicitly
+                        Authorization: `Bearer ${getCookie('token')}`
+                    }
+                }
+            );
+
+            if (!sessionResponse.data.message.isAuthenticated) {
+                throw new Error('Not authenticated');
+            }
+
+            setIsAuthenticated(true);
+            setIsLoading(false);
+
+            // Rest of your data fetching logic...
+            const userResponse = await axios.get(
+                `${BACKEND_URL}/api/v1/auth/user/me`,
+                { withCredentials: true }
+            );
+            setUsername(userResponse.data.finalUserData.username);
+            await fetchContents();
+        }
         checkSessionAndFetchData();
-    }, [router]);
+    }, [router])
+
+    // useEffect(() => {
+    //     const checkSessionAndFetchData = async () => {
+    //         try {
+    //             setIsLoading(true);
+
+    //             // First check for token in URL (fallback from OAuth)
+    //             // const urlToken = router.query.token;
+
+
+    //             const urlToken = searchParams.get('token');
+
+    //             if (urlToken) {
+    //                 // Store the token in cookies
+    //                 document.cookie = `token=${urlToken}; path=/; max-age=${4 * 24 * 60 * 60}; secure=${process.env.NODE_ENV === 'production'}; sameSite=lax`;
+
+    //                 // Clean the URL - new way without shallow
+    //                 const newUrl = new URL(window.location.href);
+    //                 newUrl.searchParams.delete('token');
+    //                 router.replace(newUrl.toString());
+    //             }
+
+    //             // Then verify session
+    //             const sessionResponse = await axios.get(
+    //                 `${BACKEND_URL}/api/v1/auth/user/session`,
+    //                 {
+    //                     withCredentials: true,
+    //                     headers: {
+    //                         // Include token from cookies explicitly
+    //                         Authorization: `Bearer ${getCookie('token')}`
+    //                     }
+    //                 }
+    //             );
+
+    //             if (!sessionResponse.data.message.isAuthenticated) {
+    //                 throw new Error('Not authenticated');
+    //             }
+
+    //             setIsAuthenticated(true);
+
+    //             // Rest of your data fetching logic...
+    //             const userResponse = await axios.get(
+    //                 `${BACKEND_URL}/api/v1/auth/user/me`,
+    //                 { withCredentials: true }
+    //             );
+    //             setUsername(userResponse.data.finalUserData.username);
+    //             await fetchContents();
+
+    //         } catch (error) {
+    //             console.error("Authentication error:", error);
+    //             setNotification({
+    //                 message: "Session expired. Please login again",
+    //                 type: "error"
+    //             });
+    //             setTimeout(() => router.push("/"), 2000);
+    //         } finally {
+    //             setIsLoading(false);
+    //         }
+    //     };
+
+    //     checkSessionAndFetchData();
+    // }, [router, searchParams]);
 
     const fetchContents = async () => {
         try {

@@ -4,10 +4,14 @@ import React from 'react';
 import styled from 'styled-components';
 
 const OauthProvider = () => {
+    const handleGoogleLogin = () => {
+        window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
+    };
+
     return (
         <StyledWrapper>
             <div className="shubh-style gap-y-3">
-                <button onClick={() => { alert("COMING SOON") }} className="oauthButton">
+                <button onClick={handleGoogleLogin} className="oauthButton">
                     <div className='mr-2'>
                         <Google />
                     </div>
