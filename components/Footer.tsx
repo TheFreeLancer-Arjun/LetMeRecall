@@ -1,11 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
-import SocialCard from "./ui/SocialCards";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-[#192227] h-[11cm] flex justify-center items-center  rounded-4xl ">
@@ -59,7 +56,7 @@ const Footer = () => {
               <div className="w-[11cm] h-[2cm] bg-[#192227] text-5xl flex items-center justify-center rounded-full text-[#F9A600]  border-black border-[2px]   border-b-[5px]  border-r-[10px]">
                 <Link href="" target="_blank" rel="noopener noreferrer">
                   {" "}
-                  Let's Contact{" "}
+                  Lets Contact{" "}
                 </Link>
               </div>
             </div>

@@ -1,7 +1,6 @@
 import { Github } from "@/icons/Github";
 import { Google } from "@/icons/GoogleColor";
 import React from "react";
-import styled from "styled-components";
 
 const OauthProvider = () => {
   const handleGoogleLogin = () => {

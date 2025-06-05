@@ -1,10 +1,8 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
-    domains: ['res.cloudinary.com'],
-  }
-  /* config options here */
+    domains: ['cdn.prod.website-files.com', 'letmerecall.vercel.app'],
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

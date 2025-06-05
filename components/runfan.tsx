@@ -29,7 +29,7 @@ export default function RunwayScroll() {
             Instant <span className="text-[#ADE988] ">Recall</span>
           </h1>
           <h2 className="text-lg text-white p-6 pt-4 leading-relaxed ">
-            Find Anything You've Saved. No More Endless Scrolling Or Forgotten Bookmarks
+            Find Anything Youve Saved. No More Endless Scrolling Or Forgotten Bookmarks
           </h2>
         </div>
 

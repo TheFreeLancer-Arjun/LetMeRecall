@@ -55,7 +55,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         console.log(authLoading);
-    }, []);
+    }, [authLoading]);
 
     // Checking authentication status
     useEffect(() => {

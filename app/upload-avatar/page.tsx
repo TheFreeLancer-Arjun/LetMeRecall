@@ -24,7 +24,7 @@ export default function UploadAvatar() {
     useEffect(() => {
         console.log(isAuthenticated);
         console.log(authLoading);
-    }, []);
+    }, [isAuthenticated,authLoading]);
 
     // Checking authentication status
     useEffect(() => {

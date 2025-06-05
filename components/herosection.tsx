@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowUp } from "@/icons/ArrowUp";
 import OauthProvider from "./ui/OauthProviderBtn";
+import Image from "next/image";
 export const HeroSection = () => {
   return (
     <div>
@@ -33,7 +34,9 @@ export const HeroSection = () => {
           </div>
           <div className="w-[25%] h-full flex justify-center items-center ">
             <div className="h-[12cm] w-[8cm] bg-transparent rounded-full border-[4px] border-gray-400 overflow-hidden flex justify-center items-center ">
-              <img
+              <Image
+              width={200}
+              height={100}
                 src="https://cdn.prod.website-files.com/66ba51656bf1fb9fa04683d6/675866b9eb3258ba1fc7bc8a_runway-screenshot.webp"
                 alt=""
               />
@@ -64,7 +67,7 @@ export const HeroSection = () => {
             </span>
           </div>
         </div>
-      </div>``
+      </div>
     </div>
   );
 };

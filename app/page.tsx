@@ -4,12 +4,12 @@ import {  useState, useEffect } from "react";
 
 
 import { Navbar } from "@/components/Navbar";
-import { BACKEND_URL } from "@/app/config";
 import Footer from "@/components/Footer";
 import RunwayScroll from "@/components/runfan";
 import FounderSection from "@/components/founder";
 import { HeroSection } from "@/components/herosection";
 import AwwwardsLoader from "@/components/ui/LandingLoader";
+import Image from "next/image";
 
 export default function Home() {
   const [showLoader, setShowLoader] = useState(true);
@@ -40,7 +40,9 @@ export default function Home() {
 
         <div className="p-10 rounded-4xl">
           <div className="flex justify-center items-center overflow-hidden bg-[#192227] rounded-4xl p-10">
-            <img
+            <Image
+            width={100}
+            height={100}
               className="h-[16cm] w-[35cm] border-[3px] border-white rounded-2xl"
               src="https://cdn.prod.website-files.com/66ba51656bf1fb9fa04683d6/675866b9eb3258ba1fc7bc8a_runway-screenshot.webp"
               alt="Runway Screenshot"
