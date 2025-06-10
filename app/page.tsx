@@ -1,76 +1,79 @@
 "use client";
 
-import {  useState, useEffect } from "react";
+import React from "react";
+import Blue from "@/app/app-components/blue";
+import Green from "@/app/app-components/green";
+import Webinar from "@/app/app-components/webinar";
+import White from "@/app/app-components/white";
+import WhitePublic from "@/app/app-components/white-public";
+import Yellow from "@/app/app-components/yellow";
+import { FaPlus } from "react-icons/fa";
+import { initialTasks } from "../app/data/tasksData"; 
+import Link from "next/link";
 
-
-import { Navbar } from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import RunwayScroll from "@/components/runfan";
-import FounderSection from "@/components/founder";
-import { HeroSection } from "@/components/herosection";
-import AwwwardsLoader from "@/components/ui/LandingLoader";
-import Image from "next/image";
-
-export default function Home() {
-  const [showLoader, setShowLoader] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowLoader(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (showLoader) {
-    return (
-      <div className="h-screen bg-slate-500 flex items-center justify-center">
-        <AwwwardsLoader />
-      </div>
-    );
-  }
-
+export default function Page() {
   return (
-    <div className="min-h-screen">
-      <div className="border-white border-[20px]">
-        <div className="relative z-50">
-          <Navbar />
+    <div className="relative  bg-[#1F1F1F] ">
+      {/* Top Bar */}
+      <div className="absolute bottom-10 right-0 left-0 h-[3cm] z-50 flex items-center justify-center text-white font-bold text-xl shadow-md">
+        <div className="w-[15cm] h-[2cm] bg-transparent text-white border-[3px] border-white rounded-r-full rounded-l-full flex justify-between p-5 items-center gap-5 text-3xl">
+      <Link href="/landing">
+          <div className="bg-white text-black px-5 py-2 rounded-3xl">
+            <FaPlus />
+          </div> 
+      </Link>
+          <Link href="/profile">
+          <div className="bg-white text-black px-5 py-2 rounded-3xl">
+            <FaPlus />
+          </div> 
+      </Link>
+           <Link href="/dashboard">
+          <div className="bg-white text-black px-5 py-2 rounded-3xl">
+            <FaPlus />
+          </div> 
+      </Link>
+           <Link href="">
+          <div className="bg-white text-black px-5 py-2 rounded-3xl">
+            <FaPlus />
+          </div> 
+      </Link>
         </div>
-
-        <section>
-          <HeroSection />
-        </section>
-
-        <div className="p-10 rounded-4xl">
-          <div className="flex justify-center items-center overflow-hidden bg-[#192227] rounded-4xl p-10">
-            <Image
-            width={100}
-            height={100}
-              className="h-[16cm] w-[35cm] border-[3px] border-white rounded-2xl"
-              src="https://cdn.prod.website-files.com/66ba51656bf1fb9fa04683d6/675866b9eb3258ba1fc7bc8a_runway-screenshot.webp"
-              alt="Runway Screenshot"
-            />
-          </div>
-        </div>
-
-        <section>
-          <RunwayScroll />
-        </section>
-
-        <section className="p-10 rounded-2xl">
-          <FounderSection />
-        </section>
-
-        <section>
-          <Footer />
-        </section>
       </div>
 
-      <div>
-        <video
-          autoPlay
-          loop
-          muted
-          className="h-[6cm] w-full object-cover"
-          src="/aCJfjSdWJ-7kR-ES_footerV2.mp4"
-        />
+      {/* Main Layout */}
+      <div className="flex">
+        {/* Left Scrollable Content */}
+          <div className="   p-2 bg-white  w-screen">
+          <div className="flex flex-col gap-4">
+            {/* Row 1 */}
+            <div className="flex gap-5 bg-[#1F1F1F] p-5 rounded-2xl">
+              <White />
+                  <Blue />
+            </div>
+              <div className="flex gap-5 bg-[#1F1F1F] p-5 rounded-2xl">
+          
+            </div>
+             <div className="flex gap-5 bg-[#1F1F1F] p-5 rounded-2xl">
+               <Yellow />
+            </div>
+            {/* Row 2 */}
+            <div className="flex gap-5 bg-[#1F1F1F] p-5 rounded-2xl mt-5">
+              <WhitePublic />
+           
+            </div>
+          </div>
+          
+        {/* Right Section */}
+         <div className="flex-1  overflow-y-scroll space-y-4 p-5 custom-scroll">
+          {/* ✅ Dynamic Green cards from task data */}
+          {initialTasks.map((task, i) => (
+            <Green key={i} task={task} />
+          ))}
+          <Webinar />
+        </div>
+        </div>
+
+     
       </div>
     </div>
   );

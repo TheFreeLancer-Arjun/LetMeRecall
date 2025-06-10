@@ -25,7 +25,10 @@ export const Navbar = () => {
           <Link href="#" className="hover:text-white cursor-pointer">
             About
           </Link>
-          <span className="hover:text-white cursor-pointer">Projects</span>
+
+          <Link href="/social-media" className="hover:text-white cursor-pointer">
+            SocialMedia
+          </Link>
           <Link href="#" className="hover:text-white cursor-pointer">
             Login
           </Link>

@@ -1,7 +1,8 @@
 import React from "react";
 import { ArrowUp } from "@/icons/ArrowUp";
-import OauthProvider from "./ui/OauthProviderBtn";
+import OauthProvider from "../../../components/ui/OauthProviderBtn";
 import Image from "next/image";
+import Link from "next/link";
 export const HeroSection = () => {
   return (
     <div>
@@ -45,7 +46,9 @@ export const HeroSection = () => {
         </div>
 
         <div className="flex justify-between items-center mt-2  gap-5 h-[30%]">
-          <div className="w-[10cm] h-[4cm] bg-[#B08CE1] border-[3px] border-white rounded-4xl flex justify-center items-center">
+
+          <Link href="/">
+    <div className="w-[10cm] h-[4cm] bg-[#B08CE1] border-[3px] border-white rounded-4xl flex justify-center items-center">
             <div className="text-center">
               <div className="text-4xl  font-bold inline-block  mr-[5cm]">
                 See
@@ -56,6 +59,8 @@ export const HeroSection = () => {
             
             </div>
           </div>
+          </Link>
+      
 
           <div className="w-[18cm] h-[3cm] border-[3px] border-white rounded-4xl flex justify-center items-center">
             <OauthProvider />
