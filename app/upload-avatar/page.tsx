@@ -8,7 +8,7 @@ import { BACKEND_URL } from "../config";
 import Image from "next/image";
 import { Close } from "@/icons/Close";
 import { Cloud } from "@/icons/Cloud";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/src/components/ui/Button";
 import { ArrowUp } from "@/icons/ArrowUp";
 import { Back } from "@/icons/Back";
 

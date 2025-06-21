@@ -1,77 +1,100 @@
-import React from "react";
+"use client";
 
-// Sample data for public todos
-const todos = [
-  {
-    id: 1,
-    username: "ajeet",
-    handle: "opensox.in",
-    content: "I want to go deep in one backend language",
-    avatar:
-      "https://cdn.prod.website-files.com/66c8de55c88c8d9cb1c944cc/66f66eb49e1847a2a872abf3_Anthony.png",
-    likes: 12,
-    shares: 3,
-    comments: 5,
-    saves: 2,
-    views: 101,
-  },
-  {
-    id: 2,
-    username: "riya",
-    handle: "riya.dev",
-    content: "Learning React is so fun and powerful!",
-    avatar:
-      "https://randomuser.me/api/portraits/women/44.jpg",
-    likes: 25,
-    shares: 8,
-    comments: 4,
-    saves: 5,
-    views: 200,
-  },
-  // Add more todos as needed
-];
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../src/lib/axiosInstance";
+import { useAuth } from "../../src/context/AuthContext";
+import Image from "next/image";
+
+interface Todo {
+  id: string;
+  username: string;
+  handle: string;
+  content: string;
+  avatar: string;
+  likes: number;
+  shares: number;
+  comments: number;
+  saves: number;
+  views: number;
+}
 
 export default function SocialMediaTodos() {
-  return (
-    <div style={{ maxWidth: 600, margin: "auto", padding: 20, fontFamily: "Arial, sans-serif" }}>
-      <header style={{ marginBottom: 20 }}>
-        <h1 style={{ fontWeight: "bold" }}>Public Todos</h1>
-      </header>
 
-      {todos.map((todo) => (
-        <article
-          key={todo.id}
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: 10,
-            padding: 15,
-            marginBottom: 20,
-            boxShadow: "0 2px 5px rgb(0 0 0 / 0.1)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-            <img
-              src={todo.avatar}
-              alt={`${todo.username} avatar`}
-              style={{ width: 50, height: 50, borderRadius: "50%", marginRight: 12 }}
-            />
-            <div>
-              <strong style={{ fontSize: 16 }}>{todo.username}</strong>{" "}
-              <span style={{ color: "#555" }}>@{todo.handle}</span>
+  const { activeAccountId } = useAuth(); // ✅ This is missing in your code
+
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+
+    
+      try {
+
+
+ const res = await axiosInstance.get("/api/v1/todo/all", {
+          params: { accountId: activeAccountId },
+        })
+
+
+
+
+
+        setTodos(res.data.todos);
+      } catch (err) {
+        console.error("Failed to fetch public todos", err);
+        setError("Failed to load todos. Try again later.");
+      }
+    };
+    fetchTodos();
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-2xl mx-auto">
+        <header className="mb-6">
+          <h1 className="text-3xl font-extrabold text-gray-800">Public Todos</h1>
+          <p className="text-gray-500">See what others are planning publicly.</p>
+        </header>
+
+        {error && <div className="text-red-500 mb-4">{error}</div>}
+
+        {todos.map((todo) => (
+          <div
+            key={todo.id}
+            className="bg-white rounded-xl shadow-md p-5 mb-6 border border-gray-200 hover:shadow-lg transition"
+          >
+            <div className="flex items-center mb-4">
+              <div className="relative w-12 h-12 mr-4">
+                <Image
+                  src={todo.avatar}
+                  alt={todo.username + " avatar"}
+                  fill
+                  className="rounded-full object-cover"
+                />
+              </div>
+              <div>
+                <h2 className="font-bold text-lg text-gray-800">{todo.username}</h2>
+                <p className="text-sm text-gray-500">@{todo.handle}</p>
+              </div>
+            </div>
+
+            <p className="text-gray-800 text-lg mb-4 whitespace-pre-line">{todo.content}</p>
+
+            <div className="flex flex-wrap gap-3 text-sm text-gray-600 font-semibold">
+              <span className="hover:text-blue-600 cursor-pointer">👍 {todo.likes}</span>
+              <span className="hover:text-blue-600 cursor-pointer">🔁 {todo.shares}</span>
+              <span className="hover:text-blue-600 cursor-pointer">💬 {todo.comments}</span>
+              <span className="hover:text-blue-600 cursor-pointer">💾 {todo.saves}</span>
+              <span className="hover:text-blue-600 cursor-pointer">👀 {todo.views}</span>
             </div>
           </div>
+        ))}
 
-          <p style={{ fontSize: 18, marginBottom: 15 }}>{todo.content}</p>
-
-          <div style={{ display: "flex", justifyContent: "space-between", maxWidth: 400 }}>
-            <button>👍 Like {todo.likes}</button>
-            <button>🔁 Share {todo.shares}</button>
-            <button>💬 Comment {todo.comments}</button>
-            <button>💾 Save {todo.saves}</button>
-            <button>👀 Views {todo.views}</button>
-          </div>
-        </article>
-      ))}
-    </div>
+        {todos.length === 0 && !error && (
+          <p className="text-center text-gray-500 mt-20">No public todos yet.</p>
+        )}
+      </div>
+    </main>
   );
 }

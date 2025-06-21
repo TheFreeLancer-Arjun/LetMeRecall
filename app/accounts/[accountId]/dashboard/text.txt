@@ -1,0 +1,32 @@
+// app/dashboard/page.tsx
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "./components/AuthContext";
+import TodoList from "./components/TodoList";
+import AddTodoForm from "./components/AddTodoForm";
+
+export default function DashboardPage() {
+  const auth = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!auth?.loading && !auth?.isAuthenticated) {
+      router.push("/signin"); // 👈 redirect if not logged in
+    }
+  }, [auth?.loading, auth?.isAuthenticated]);
+
+  if (auth?.loading || !auth?.user || !auth?.activeAccountId) {
+    return <div className="p-6">Loading...</div>;
+  }
+
+  return (
+    <div className="p-6">
+
+      
+      <AddTodoForm accountId={auth.activeAccountId} />
+      <TodoList  accountId={auth.activeAccountId} />
+    </div>
+  );
+}

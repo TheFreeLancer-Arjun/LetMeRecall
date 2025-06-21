@@ -1,74 +1,102 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useUpdateTodo } from "../../src/hook/useUpdateTodo";
+import { useDeleteTodo } from "../../src/hook/useDeleteTodo";
 
+// 🔒 Shared type
 export type TaskType = {
+  id?: string;
   title: string;
-  description: string;
-  links: string[];
-  priority: "high" | "medium" | "low";
-  list: "personal" | "work";
-  Visibility: "private" | "public";
-  date: string;
-  time: string;
+  description?: string;
+  date?: string;
+  time?: string;
+  subTasks: string[];
   tags: string[];
-  subtasks: string[];
+  links: string[];
+  list: "Personal" | "Work";
+  priority?: "high" | "medium" | "low";
+  visibility?: "private" | "public";
+  accountId: string;
 };
 
+type RawTaskType =
+  | TaskType
+  | (Omit<TaskType, "subTasks"> & { subTasks?: string[] });
+
 interface PanelProps {
-  task: TaskType;
+  task: RawTaskType;
   onChange: (t: TaskType) => void;
   onDelete: () => void;
 }
 
+const normalizeTask = (raw: RawTaskType): TaskType => ({
+  ...raw,
+  subTasks: Array.isArray(raw.subTasks) ? raw.subTasks : [],
+  tags: raw.tags || [],
+  links: raw.links || [],
+});
+
 export default function Panel({ task, onChange, onDelete }: PanelProps) {
-  const [localTask, setLocalTask] = useState<TaskType>(task);
+  const [localTask, setLocalTask] = useState<TaskType>(() => normalizeTask(task));
   const [newSubtask, setNewSubtask] = useState("");
   const [newTag, setNewTag] = useState("");
+  const [newLink, setNewLink] = useState("");
+
+  const { update, loading: updating } = useUpdateTodo();
+  const { deleteTodo, loading: deleting } = useDeleteTodo();
 
   useEffect(() => {
-    setLocalTask(task);
+    setLocalTask(normalizeTask(task));
   }, [task]);
 
-  const handleSave = () => {
-    onChange(localTask);
+  const handleSave = async () => {
+    if (!localTask.id) return;
+    const updated = await update(localTask.id, {
+      title: localTask.title,
+      description: localTask.description,
+      date: localTask.date,
+      time: localTask.time,
+      visibility: localTask.visibility,
+      priority: localTask.priority,
+       accountId: localTask.accountId,
+    });
+    if (updated) onChange(localTask);
   };
 
-  const addSubtask = () => {
-    if (!newSubtask.trim()) return;
-    setLocalTask((prev) => ({
-      ...prev,
-      subtasks: [...prev.subtasks, newSubtask.trim()],
-    }));
-    setNewSubtask("");
+  const handleDelete = async () => {
+    if (!localTask.id || !localTask.accountId) return;
+    const deleted = await deleteTodo(localTask.id);
+    if (deleted) onDelete();
   };
 
-  const addTag = () => {
-    if (!newTag.trim()) return;
+  const addItem = (field: keyof TaskType, value: string) => {
+    if (!value.trim()) return;
     setLocalTask((prev) => ({
       ...prev,
-      tags: [...prev.tags, newTag.trim()],
+      [field]: [...(prev[field] as string[]), value.trim()],
     }));
-    setNewTag("");
   };
 
   return (
     <div className="w-full max-w-md p-6 bg-gray-200 shadow-lg rounded-2xl h-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-600">Edit Task</h1>
+        <h1 className="text-2xl font-bold text-gray-600">Task</h1>
         <div className="flex gap-2">
           <button
-            onClick={onDelete}
-            className="bg-white px-4 py-2 rounded-lg border border-gray-400 text-sm font-bold text-gray-600 hover:bg-red-200 duration-300"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="px-3 py-2 bg-red-300 rounded text-sm disabled:opacity-50"
           >
-            Delete Task
+            Delete
           </button>
           <button
             onClick={handleSave}
-            className="bg-yellow-300 px-4 py-2 rounded-lg border border-gray-400 text-sm font-bold text-gray-600 hover:bg-yellow-200 duration-300"
+            disabled={updating}
+            className="px-3 py-2 bg-yellow-300 rounded text-sm disabled:opacity-50"
           >
-            Save Changes
+            Save
           </button>
         </div>
       </div>
@@ -79,173 +107,149 @@ export default function Panel({ task, onChange, onDelete }: PanelProps) {
         value={localTask.title}
         onChange={(e) => setLocalTask({ ...localTask, title: e.target.value })}
         placeholder="Task title"
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg text-gray-600"
+        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded"
       />
 
       {/* Description */}
       <textarea
-        value={localTask.description}
+        value={localTask.description || ""}
         onChange={(e) =>
           setLocalTask({ ...localTask, description: e.target.value })
         }
         rows={3}
         placeholder="Task description"
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg text-gray-600"
+        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded"
       />
 
-      {/* Link */}
-      <label className="block text-sm font-medium text-gray-600 mb-1">
-        Add Links
-      </label>
+      {/* Date & Time */}
       <input
-        type="text"
-        value={localTask.title}
-        onChange={(e) => setLocalTask({ ...localTask, link: e.target.value })}
-        placeholder="Add Link"
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg text-gray-600"
+        type="date"
+        value={localTask.date || ""}
+        onChange={(e) => setLocalTask({ ...localTask, date: e.target.value })}
+        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded"
       />
-
-      {/* Priority */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600 mb-1">
-          Priority
-        </label>
-        <select
-          value={localTask.priority}
-          onChange={(e) =>
-            setLocalTask({
-              ...localTask,
-              priority: e.target.value as TaskType["priority"],
-            })
-          }
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-600"
-        >
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-      </div>
-
-      {/* List */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600 mb-1">
-          List
-        </label>
-        <select
-          value={localTask.list}
-          onChange={(e) => setLocalTask({ ...localTask, list: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-600"
-        >
-          <option value="Personal">Personal</option>
-          <option value="Work">Work</option>
-        </select>
-      </div>
-
-      {/* Public or Private */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600 mb-1">
-          Visibility
-        </label>
-        <select
-          value={localTask.priviteOrPublic}
-          onChange={(e) =>
-            setLocalTask({
-              ...localTask,
-              priviteOrPublic: e.target.value as TaskType["priviteOrPublic"],
-            })
-          }
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-600"
-        >
-          <option value="public">Public</option>
-          <option value="private">Private</option>
-        </select>
-      </div>
-
-      {/* Date */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600 mb-1">
-          Due Date
-        </label>
-        <input
-          type="date"
-          value={localTask.date}
-          onChange={(e) => setLocalTask({ ...localTask, date: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-600"
-        />
-      </div>
-
-      {/* Time */}
-      <label className="text-sm font-medium text-gray-600 block mb-1">
-        Select Time
-      </label>
       <input
         type="time"
-        name="time"
-        value=""
-        className="w-full p-2 mb-3 border rounded"
+        value={localTask.time || ""}
+        onChange={(e) => setLocalTask({ ...localTask, time: e.target.value })}
+        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded"
       />
+
+      {/* Dropdowns */}
+      <select
+        value={localTask.list}
+        onChange={(e) =>
+          setLocalTask({ ...localTask, list: e.target.value as TaskType["list"] })
+        }
+        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded"
+      >
+        <option value="Personal">Personal</option>
+        <option value="Work">Work</option>
+      </select>
+
+      <select
+        value={localTask.visibility || ""}
+        onChange={(e) =>
+          setLocalTask({
+            ...localTask,
+            visibility: e.target.value as TaskType["visibility"],
+          })
+        }
+        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded"
+      >
+        <option value="">Select Visibility</option>
+        <option value="private">Private</option>
+        <option value="public">Public</option>
+      </select>
+
+      <select
+        value={localTask.priority || ""}
+        onChange={(e) =>
+          setLocalTask({
+            ...localTask,
+            priority: e.target.value as TaskType["priority"],
+          })
+        }
+        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded"
+      >
+        <option value="">Select Priority</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
 
       {/* Tags */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600 mb-1">
-          Tags
-        </label>
-        <div className="flex gap-2">
-          <input
-            value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
-            placeholder="New tag"
-            className="flex-1 px-3 py-2 border border-gray-300 bg-blue-100 rounded-lg text-gray-600"
-          />
-          <button
-            onClick={addTag}
-            className="bg-white px-4 py-2 rounded-lg border border-gray-400 text-sm text-gray-600 hover:bg-gray-200"
-          >
-            Add
-          </button>
-        </div>
-        <div className="flex flex-wrap mt-2 gap-2">
-          {localTask.tags.map((tag, idx) => (
-            <span
-              key={idx}
-              className="px-3 py-1 bg-yellow-100 rounded-full text-sm text-gray-700"
-            >
+        <input
+          value={newTag}
+          onChange={(e) => setNewTag(e.target.value)}
+          placeholder="Add tag"
+          className="w-full mb-2 px-4 py-2 border rounded"
+        />
+        <button
+          onClick={() => {
+            addItem("tags", newTag);
+            setNewTag("");
+          }}
+          className="mb-2 px-3 py-1 bg-white border rounded text-sm"
+        >
+          Add Tag
+        </button>
+        <div className="flex flex-wrap gap-2">
+          {localTask.tags.map((tag, i) => (
+            <span key={`${tag}-${i}`} className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
               {tag}
             </span>
           ))}
         </div>
       </div>
 
+      {/* Links */}
+      <div className="mb-4">
+        <input
+          value={newLink}
+          onChange={(e) => setNewLink(e.target.value)}
+          placeholder="Add link"
+          className="w-full mb-2 px-4 py-2 border rounded"
+        />
+        <button
+          onClick={() => {
+            addItem("links", newLink);
+            setNewLink("");
+          }}
+          className="mb-2 px-3 py-1 bg-white border rounded text-sm"
+        >
+          Add Link
+        </button>
+        <ul className="text-sm text-gray-700 pl-4 list-disc">
+          {localTask.links.map((link, i) => (
+            <li key={`${link}-${i}`}>{link}</li>
+          ))}
+        </ul>
+      </div>
+
       {/* Subtasks */}
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1">
-          Subtasks
-        </label>
-        <div className="flex gap-2 mb-2">
-          <input
-            value={newSubtask}
-            onChange={(e) => setNewSubtask(e.target.value)}
-            placeholder="New subtask"
-            className="flex-1 px-3 py-2 border border-gray-300 bg-blue-100 rounded-lg text-gray-600"
-          />
-          <button
-            onClick={addSubtask}
-            className="bg-white px-4 py-2 rounded-lg border border-gray-400 text-sm text-gray-600 hover:bg-gray-200"
-          >
-            Add
-          </button>
-        </div>
-        <div className="flex flex-col gap-1">
-          {localTask.subtasks.map((sub, idx) => (
-            <label
-              key={idx}
-              className="flex items-center text-gray-700 text-sm"
-            >
-              <input type="checkbox" className="mr-2" />
-              {sub}
-            </label>
+        <input
+          value={newSubtask}
+          onChange={(e) => setNewSubtask(e.target.value)}
+          placeholder="Add subtask"
+          className="w-full mb-2 px-4 py-2 border rounded"
+        />
+        <button
+          onClick={() => {
+            addItem("subTasks", newSubtask);
+            setNewSubtask("");
+          }}
+          className="mb-2 px-3 py-1 bg-white border rounded text-sm"
+        >
+          Add Subtask
+        </button>
+        <ul className="text-sm text-gray-700 pl-4 list-disc">
+          {localTask.subTasks.map((subTask, i) => (
+            <li key={`${subTask}-${i}`}>{subTask}</li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   );

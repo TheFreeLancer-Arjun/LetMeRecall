@@ -1,0 +1,387 @@
+"use client";
+
+import React, { useState } from "react";
+import Panel, { TaskType as RawTaskType } from "./panel";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
+import { FaArrowRight, FaBars, FaCalendarAlt } from "react-icons/fa";
+
+const getPriorityColor = (priority: string | undefined) => {
+  switch (priority) {
+    case "low":
+      return "bg-yellow-400";
+    case "medium":
+      return "bg-green-400";
+    case "high":
+      return "bg-red-400";
+    default:
+      return "bg-gray-300";
+  }
+};
+
+const capitalize = (str: string) =>
+  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+type Props = {
+  title: string;
+};
+
+type Task = RawTaskType & { id: string };
+
+export default function Task({ title }: Props) {
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: "1",
+      title: "Buy Groceries",
+      description: "Milk, Bread, Eggs etc.",
+      date: "2025-06-15",
+      time: "09:00",
+      subTasks: ["Go to store", "Choose items", "Pay"],
+      tags: ["shopping"],
+      links: [],
+      list: "Personal",
+      priority: "medium",
+      visibility: "private",
+      accountId: "local",
+    },
+    {
+      id: "2",
+      title: "Team Meeting",
+      description: "Weekly discussion",
+      date: "2025-06-16",
+      time: "11:30",
+      subTasks: ["Prepare report", "Discuss issues"],
+      tags: ["work"],
+      links: [],
+      list: "Work",
+      priority: "high",
+      visibility: "public",
+      accountId: "local",
+    },
+    // 👉 You can add more tasks here for testing
+  ]);
+
+  const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(
+    null
+  );
+  const [newTask, setNewTask] = useState("");
+
+  const half = Math.ceil(tasks.length / 2);
+  const leftTasks = tasks.slice(0, half);
+  const rightTasks = tasks.slice(half);
+
+  const handleAddTask = () => {
+    if (!newTask.trim()) return;
+
+    const newTaskObj: Task = {
+      id: Date.now().toString(),
+      title: newTask.trim(),
+      description: "",
+      date: new Date().toISOString().slice(0, 10),
+      time: "",
+      subTasks: [],
+      tags: [],
+      links: [],
+      list: "Personal",
+      priority: "low",
+      visibility: "private",
+      accountId: "local",
+    };
+
+    setTasks((prev) => [...prev, newTaskObj]);
+    setNewTask("");
+  };
+
+  const updateTask = (index: number, updatedTask: Task) => {
+    const updatedTasks = [...tasks];
+    updatedTasks[index] = updatedTask;
+    setTasks(updatedTasks);
+  };
+
+  const deleteTask = (index: number) => {
+    const newTasks = [...tasks];
+    newTasks.splice(index, 1);
+    setTasks(newTasks);
+    setSelectedTaskIndex(null);
+  };
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    const reordered = [...tasks];
+    const [removed] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, removed);
+    setTasks(reordered);
+  };
+
+  return (
+    <section className="w-full h-screen overflow-y-auto flex-col gap-5 bg-[#F6E2F4] rounded-4xl border-[3px]">
+      <h1 className="text-5xl font-bold text-[#1C0424] flex justify-start p-5 pl-10">
+        <div
+          style={{ fontFamily: "RacingSansOne" }}
+          className="text-7xl sm:text-8xl md:text-9xl uppercase italic expressive"
+        >
+          Today
+        </div>
+      </h1>
+
+      <div className="w-full flex justify-center items-start gap-2">
+        {/* Left Column */}
+        <div className="w-[50%]">
+          {/* Input */}
+          <div className="w-full flex justify-start items-center">
+            <div className="flex gap-2 items-center rounded-4xl border-gray-200 border bg-white w-[85%] px-2 py-2 shadow-lg focus-within:shadow-lg transition-shadow">
+              <FaBars className="text-[#2B0B36] text-xl ml-6 cursor-pointer font-light" />
+              <input
+                type="text"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+                placeholder="+ Add New Task"
+                className="rounded-4xl px-4 py-2 border-[#1C0424] border-[1px] placeholder-[#2B0B36]/80 bg-transparent focus:outline-none text-base w-full"
+              />
+            </div>
+            <div className="p-5 w-[15%] flex justify-center items-center">
+              <button
+                onClick={handleAddTask}
+                className="text-lg px-4 py-3 font-semibold rounded-full border border-[#1C0424] bg-[#DEFF96] shadow-2xl"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          {/* Left Side Task Cards */}
+          <div className="w-full flex justify-center items-center p-4">
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="leftList">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} className="w-full">
+                    {leftTasks.map((task, index) => (
+                      <Draggable key={task.id} draggableId={task.id} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={`rounded-2xl cursor-pointer mb-4 transition w-full md:w-[90%] ${
+                              selectedTaskIndex === index
+                                ? "bg-[#FF8F9B] border-[1px] border-[#670D19]"
+                                : "bg-gray-100 p-5"
+                            }`}
+                            onClick={() =>
+                              setSelectedTaskIndex(selectedTaskIndex === index ? null : index)
+                            }
+                          >
+                            <div className="flex gap-3 w-full">
+                              <div className="w-[1.5cm] h-[1.5cm] bg-gray-300 rounded-3xl"></div>
+                              <div className="flex justify-between items-center gap-2 w-full">
+                                <div className="text-lg font-light">
+                                  <div className="text-2xl font-medium">Usename</div>
+                                  <div className="text-sm font-light text-gray-700 p-1 flex justify-center items-start">
+                                    online from 10:00 AM
+                                  </div>
+                                </div>
+                                <div className="text-2xl font-light bg-[#D1D5DC] px-5 py-5 rounded-full"></div>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-center">
+                              <span className="text-2xl font-medium text-[#1C0424] flex-1 pt-5">
+                                {task.title}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap pt-2">
+                              <h1 className="p-1">
+                                {task.description.length > 80
+                                  ? `${task.description.slice(0, 80)}...`
+                                  : task.description}
+                              </h1>
+                              <div className="text-sm mt-2 flex flex-wrap gap-2 px-2 py-2 rounded-2xl text-[#1C0424] font-semibold">
+                                <span className="flex items-center gap-1">
+                                  <FaCalendarAlt /> {task.date}
+                                </span>
+                                <span className="px-2 py-1 rounded-2xl bg-green-100 text-green-800 font-semibold">
+                                  {task.list}
+                                </span>
+                                <span className="flex items-center gap-1 px-2 py-1 font-semibold">
+                                  <span
+                                    className={`w-3 h-3 rounded-sm ${
+                                      task.visibility === "public" ? "bg-green-400" : "bg-red-400"
+                                    }`}
+                                  ></span>
+                                  {task.visibility}
+                                </span>
+                                <span className="flex items-center gap-1 px-2 py-1 font-semibold">
+                                  <span className={`w-3 h-3 rounded-sm ${getPriorityColor(task.priority)}`}></span>
+                                  {task.priority}
+                                </span>
+                                {(task.tags || []).map((tag, i) => (
+                                  <span
+                                    key={i}
+                                    className="bg-[#DEFF96] font-semibold px-3 py-1 rounded-xl"
+                                  >
+                                    #{tag}
+                                  </span>
+                                ))}
+                                <span className="bg-[#DEFF96] font-semibold px-3 py-1 rounded-xl">
+                                  {task.subTasks?.length || 0} subtasks
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </div>
+        </div>
+
+        {/* Right Panel UI/UX */}
+        <div className="w-[50%] flex justify-center items-center p-2">
+          <div className="w-full max-w-[600px]">
+            <DragDropContext onDragEnd={onDragEnd}>
+                  <Droppable droppableId="taskList">
+                    {(provided) => (
+                      <div {...provided.droppableProps} ref={provided.innerRef}>
+                        {tasks.map((task, index) => (
+                          <Draggable
+                            key={task.id}
+                            draggableId={task.id}
+                            index={index}
+                          > 
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className={` rounded-t-2xl  cursor-pointer mb-4 transition w-full md:w-[90%]  rounded-2xl  overflow-hidden ${
+                                  selectedTaskIndex === index
+                                    ? "bg-[#FF8F9B] border-[1px] border-[#670D19]"
+                                    : "bg-gray-100 "
+                                }`}
+                                onClick={() =>
+                                  setSelectedTaskIndex(
+                                    selectedTaskIndex === index ? null : index
+                                  )
+                                }
+                              >
+                                <div className="h-[2.5cm]  flex justify-center items-center bg-gray-300">
+                                  <div className="w-[70%] flex-col p-4 gap-2 ">
+                                    <div className="text-4xl font-medium text-[#1C0424] ">
+                                      {task.title}
+                                    </div>
+                                    <div className="text-sm font-medium text-gray-700  p-1">
+                                      created by 10:00 AM
+                                    </div>
+                                  </div>
+                                  <div className="w-[30%] flex  justify-center items-center gap-4 ">
+                                    <button className="w-10 h-10 rounded-2xl bg-amber-700  flex justify-center items-center">
+                                      <FaArrowRight className="text-white text-2xl" />
+                                    </button>
+                                    <button className="w-10 h-10 rounded-2xl bg-amber-700 flex justify-center items-center ">
+                                      <FaArrowRight className="text-white text-2xl" />
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="flex gap-3 p-4 w-full ">
+                                  <div className="w-[1.5cm] h-[1.5cm] bg-gray-300 rounded-3xl"></div>
+                                  <div className="flex  justify-between items-center gap-2 w-full">
+                                    <div className="text-lg font-light  ">
+                                      <div className="text-2xl font-medium ">
+                                        Usename
+                                      </div>
+                                      <div className="text-sm font-light text-gray-700 p-1 flex justify-center items-start ">
+                                        online from 10:00 AM
+                                      </div>
+                                    </div>
+
+                                    <div className="text-2xl  font-light bg-[#D1D5DC]  px-5 py-5 rounded-full"></div>
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-wrap p-4">
+                                  <h1>
+                                    {task.description.length > 300
+                                      ? `${task.description.slice(0, 300)}...`
+                                      : task.description}
+                                  </h1>
+                                  <div className="text-sm mt-2 flex flex-wrap gap-2 px-2 py-2  rounded-2xl text-[#1C0424] font-semibold">
+                                    <span className="flex items-center gap-1">
+                                      <FaCalendarAlt /> {task.date}
+                                    </span>
+                                    <span className="px-2 py-1 rounded-2xl bg-green-100 text-green-800 font-semibold">
+                                      {task.list}
+                                    </span>
+                                    <span className="flex items-center gap-1 px-2 py-1 font-semibold">
+                                      <span
+                                        className={`w-3 h-3 rounded-sm ${
+                                          task.visibility === "public"
+                                            ? "bg-green-400"
+                                            : "bg-red-400"
+                                        }`}
+                                      ></span>
+                                      {task.visibility}
+                                    </span>
+                                    <span className="flex items-center gap-1 px-2 py-1 font-semibold">
+                                      <span
+                                        className={`w-3 h-3 rounded-sm ${getPriorityColor(
+                                          task.priority
+                                        )}`}
+                                      ></span>
+                                      {task.priority}
+                                    </span>
+                                    {(task.tags || []).map((tag, i) => (
+                                      <span
+                                        key={i}
+                                        className="bg-[#DEFF96] font-semibold px-3 py-1 rounded-xl"
+                                      >
+                                        #{tag}
+                                      </span>
+                                    ))}
+                                    <span className="bg-[#DEFF96] font-semibold px-3 py-1 rounded-xl">
+                                      {task.subTasks?.length || 0} subtasks
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex   gap-6 justify-center  items-center   p-4 ">
+                                  <div className="bg-[#F6E2F4] text-black px-20 py-2 rounded-3xl cursor-pointer">
+                                    Reject
+                                  </div>
+                                  <div className="bg-[#F6E2F4] text-black px-20 py-2 rounded-3xl cursor-pointer">
+                                    Done
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Slide-Out Panel */}
+      <div className="w-full md:w-[40%]">
+        {selectedTaskIndex !== null && (
+          <Panel
+            task={tasks[selectedTaskIndex]}
+            onChange={(updated) => updateTask(selectedTaskIndex, updated)}
+            onDelete={() => deleteTask(selectedTaskIndex)}
+          />
+        )}
+      </div>
+    </section>
+  );
+}

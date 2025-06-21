@@ -1,19 +1,29 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght,wdth,slnt");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&family=Montserrat:wght@400;600;700&display=swap");
+
+/* Tailwind custom scrollbar (optional) */
+.custom-scrollbar {
+  scrollbar-width: none; /* Firefox ke liye */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari ke liye */
+}
 
 @keyframes slow-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-slow-spin {
-    animation: slow-spin 10s linear infinite;
+  animation: slow-spin 10s linear infinite;
 }
-
-
 
 /* tailwind-compatible global CSS */
 .scrollbar-hidden {
@@ -23,7 +33,6 @@
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
-
 
 /* globals.css or any imported global CSS file */
 ::-webkit-scrollbar {
@@ -36,12 +45,236 @@
   border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #B08CE1; /* Tailwind's gray-600 */
-  border-radius: 9999px;
-  border: 2px solid #1f1f1f;
+@font-face {
+  font-family: "MyOutlineFont";
+  src: url("/Biting My Nails Outline.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #B08CE1; /* gray-400 */
+@font-face {
+  font-family: "RacingSansOne";
+  src: url("/RacingSansOne-Regular.ttf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "PressStart2P";
+  src: url("/PressStart2P-Regular.ttf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "DynaPuff";
+  src: url("/DynaPuff-VariableFont_wdth,wght.ttf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Rationale";
+  src: url("/Rationale-Regular.ttf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+.rotate-box {
+  transform: rotateY(45deg);
+  transform-style: preserve-3d;
+}
+
+:root {
+  --font-brand: "Open Sans", sans-serif;
+  --font-headline: "Montserrat", sans-serif;
+  --font-title: "Montserrat", sans-serif;
+  --font-plain: system-ui, sans-serif;
+}
+
+.font-brand {
+  font-family: var(--font-brand);
+}
+
+.font-headline {
+  font-family: var(--font-headline);
+}
+
+.font-title {
+  font-family: var(--font-title);
+}
+
+.font-plain {
+  font-family: var(--font-plain);
+}
+/* ==== Material 3 Expressive Utility Classes ==== */
+:root {
+  --color-primary: #a248ff;
+  --color-primary-dark: #300054;
+  --color-primary-soft: #be78fd;
+  --color-primary-muted: #76388e;
+
+  --color-accent-pink: #f2bbff;
+  --color-accent-coral: #f2848d;
+  --color-accent-warm: #e79f65;
+  --color-accent-terracotta: #e67857;
+  --color-accent-deep: #631bbb;
+
+  --color-info: #06befe;
+  --color-info-light: #aad6fd;
+  --color-contrast-dark-blue: #01354a;
+  --color-blue-soft: #a7a9fe;
+  --color-deep-indigo: #1e1c81;
+
+  --color-bg-light: #fef3f9;
+  --color-bg-dark: #2a1232;
+  --color-surface-muted: #552e5a;
+  --color-bg-black: #000000;
+
+  --color-text-primary: #120d0a;
+  --color-text-secondary: #211811;
+  --color-text-soft: #ce9faf;
+  --color-text-strong: #300054;
+  --color-heading: #45245d;
+
+  --color-error: #932e3c;
+  --color-error-bg: #fef3f9;
+  --color-warning: #ebb88b;
+  --color-danger-bg: #30020d;
+  --color-alert: #ed5564;
+
+  --color-border-dark: #271e15;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* === Background Utilities === */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+.bg-primary-dark {
+  background-color: var(--color-primary-dark);
+}
+.bg-primary-soft {
+  background-color: var(--color-primary-soft);
+}
+.bg-accent-pink {
+  background-color: var(--color-accent-pink);
+}
+.bg-accent-coral {
+  background-color: var(--color-accent-coral);
+}
+.bg-accent-warm {
+  background-color: var(--color-accent-warm);
+}
+.bg-dark {
+  background-color: var(--color-bg-dark);
+}
+.bg-light {
+  background-color: var(--color-bg-light);
+}
+.bg-surface-muted {
+  background-color: var(--color-surface-muted);
+}
+.bg-info {
+  background-color: var(--color-info);
+}
+
+/* === Text Utilities === */
+.text-primary {
+  color: var(--color-text-primary);
+}
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+.text-soft {
+  color: var(--color-text-soft);
+}
+.text-strong {
+  color: var(--color-text-strong);
+}
+.text-heading {
+  color: var(--color-heading);
+}
+.text-info {
+  color: var(--color-info);
+}
+.text-alert {
+  color: var(--color-alert);
+}
+
+/* === Border Utilities === */
+.border-dark {
+  border: 1px solid var(--color-border-dark);
+}
+.border-primary {
+  border: 1px solid var(--color-primary);
+}
+.border-soft {
+  border: 1px solid var(--color-primary-soft);
+}
+
+/* === Button Styles === */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn-accent {
+  background-color: var(--color-accent-coral);
+  color: white;
+}
+.btn-accent:hover {
+  background-color: var(--color-accent-terracotta);
+}
+
+/* === Shadow Utility === */
+.shadow-sm {
+  box-shadow: 0 2px 6px var(--color-shadow);
+}
+.shadow-md {
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+/* === Typography === */
+.font-heading {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+.font-body {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+/* === Utility Spacing (Optional) === */
+.p-2 {
+  padding: 0.5rem;
+}
+.p-4 {
+  padding: 1rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.rounded-md {
+  border-radius: 8px;
+}
+.rounded-lg {
+  border-radius: 16px;
 }

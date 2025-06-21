@@ -2,7 +2,12 @@
 
 import React from "react";
 import { TaskType } from "../data/tasksData"; // ✅ Correct path here
-import { FaChartLine, FaPlus, FaRegCalendarAlt, FaShareAlt } from "react-icons/fa";
+import {
+  FaChartLine,
+  FaPlus,
+  FaRegCalendarAlt,
+  FaShareAlt,
+} from "react-icons/fa";
 
 export default function Green({ task }: { task: TaskType }) {
   return (
@@ -31,7 +36,7 @@ export default function Green({ task }: { task: TaskType }) {
               {task.priority} <FaChartLine />
             </span>
             <span className="bg-white text-orange-500 rounded-2xl text-2xl font-medium w-[4cm] h-[1.5cm] flex justify-center items-center gap-2">
-              {task.priviteOrPublic} <FaChartLine />
+              {task.visibility} <FaChartLine />
             </span>
             <span className="bg-white text-orange-500 rounded-2xl text-2xl font-medium w-[4cm] h-[1.5cm] flex justify-center items-center gap-2">
               {task.list} <FaChartLine />
@@ -41,7 +46,7 @@ export default function Green({ task }: { task: TaskType }) {
 
         <div className="px-5">
           <div className="border-t pt-5 pb-5 text-xl font-medium text-[#1F1F1F] flex gap-5 flex-wrap">
-            {task.tags.map((tag, i) => (
+            {task.tags?.map((tag, i) => (
               <span key={i}>{`#${tag}`}</span>
             ))}
           </div>
